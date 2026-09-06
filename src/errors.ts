@@ -1,6 +1,7 @@
 /**
  * Custom error classes for the Inttegro SDK
  */
+import type { ErrorReport } from './error-reporting';
 
 /**
  * API error document structure
@@ -46,6 +47,10 @@ export class InttegroAPIError extends Error {
   public readonly cause?: string;
   /** Original decoded API error document */
   public readonly errorDocument?: APIErrorDocument;
+  /** API request identifier, when returned by the server. */
+  public readonly requestId?: string;
+  /** Privacy-safe report generated only when error reporting is configured. */
+  public report?: ErrorReport;
 
   constructor(
     message: string,
@@ -56,7 +61,8 @@ export class InttegroAPIError extends Error {
     detail?: string,
     fixCode?: string,
     cause?: string,
-    errorDocument?: APIErrorDocument
+    errorDocument?: APIErrorDocument,
+    requestId?: string
   ) {
     super(message);
     this.name = 'InttegroAPIError';
@@ -68,6 +74,7 @@ export class InttegroAPIError extends Error {
     this.fixCode = fixCode;
     this.cause = cause;
     this.errorDocument = errorDocument;
+    this.requestId = requestId;
 
     // Maintains proper stack trace for where our error was thrown (only available on V8)
     if (Error.captureStackTrace) {
@@ -80,7 +87,11 @@ export class InttegroAPIError extends Error {
   /**
    * Create error from API response
    */
-  static fromResponse(statusCode: number, response: APIErrorDocument): InttegroAPIError {
+  static fromResponse(
+    statusCode: number,
+    response: APIErrorDocument,
+    requestId?: string
+  ): InttegroAPIError {
     const payload = resolveAPIErrorPayload(response);
     const message =
       payload.message || payload.detail || response.message || 'An unknown error occurred';
@@ -102,7 +113,8 @@ export class InttegroAPIError extends Error {
         detail,
         fixCode,
         cause,
-        response
+        response,
+        requestId
       );
     }
 
@@ -115,7 +127,8 @@ export class InttegroAPIError extends Error {
       detail,
       fixCode,
       cause,
-      response
+      response,
+      requestId
     );
   }
 }
@@ -134,9 +147,10 @@ export class InttegroValidationError extends InttegroAPIError {
     detail?: string,
     fixCode?: string,
     cause?: string,
-    errorDocument?: APIErrorDocument
+    errorDocument?: APIErrorDocument,
+    requestId?: string
   ) {
-    super(message, statusCode, code, type, url, detail, fixCode, cause, errorDocument);
+    super(message, statusCode, code, type, url, detail, fixCode, cause, errorDocument, requestId);
     this.name = 'InttegroValidationError';
     Object.setPrototypeOf(this, InttegroValidationError.prototype);
   }
@@ -150,6 +164,8 @@ export class InttegroNetworkError extends Error {
   public readonly cause?: Error;
   /** Whether the error was due to a timeout */
   public readonly isTimeout: boolean;
+  /** Privacy-safe report generated only when error reporting is configured. */
+  public report?: ErrorReport;
 
   constructor(message: string, cause?: Error, isTimeout = false) {
     super(message);
@@ -178,7 +194,8 @@ export class InttegroAuthenticationError extends InttegroAPIError {
     detail?: string,
     fixCode?: string,
     cause?: string,
-    errorDocument?: APIErrorDocument
+    errorDocument?: APIErrorDocument,
+    requestId?: string
   ) {
     super(
       message,
@@ -189,7 +206,8 @@ export class InttegroAuthenticationError extends InttegroAPIError {
       detail,
       fixCode,
       cause,
-      errorDocument
+      errorDocument,
+      requestId
     );
     this.name = 'InttegroAuthenticationError';
     Object.setPrototypeOf(this, InttegroAuthenticationError.prototype);
@@ -213,7 +231,8 @@ export class InttegroRateLimitError extends InttegroAPIError {
     detail?: string,
     fixCode?: string,
     cause?: string,
-    errorDocument?: APIErrorDocument
+    errorDocument?: APIErrorDocument,
+    requestId?: string
   ) {
     super(
       message,
@@ -224,7 +243,8 @@ export class InttegroRateLimitError extends InttegroAPIError {
       detail,
       fixCode,
       cause,
-      errorDocument
+      errorDocument,
+      requestId
     );
     this.name = 'InttegroRateLimitError';
     this.retryAfter = retryAfter;
