@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { HttpClient } from '../http-client';
 import { Telemetry } from '../telemetry';
 import { SDK_VERSION } from '../version';
+import type { ErrorReport } from '../error-reporting';
 
 type RecordedEvent = { name: string; attributes?: Record<string, unknown> };
 
@@ -30,6 +31,14 @@ class RecordedSpan {
 
   end(): void {
     this.ended = true;
+  }
+
+  spanContext(): { traceId: string; spanId: string; traceFlags: number } {
+    return {
+      traceId: '4bf92f3577b34da6a3ce929d0e0e4736',
+      spanId: '00f067aa0ba902b7',
+      traceFlags: 1,
+    };
   }
 }
 
@@ -147,5 +156,86 @@ describe('OpenTelemetry integration', () => {
       'error.type': 'http_503',
     });
     expect(JSON.stringify(records)).not.toContain('sensitive provider detail');
+  });
+
+  it('reports one privacy-safe final failure only when a reporter is configured', async () => {
+    const reports: ErrorReport[] = [];
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: {
+            type: 'transient_error',
+            code: 'provider_failed',
+            fixCode: 'repeat_same_request',
+            message: 'private provider detail',
+          },
+        }),
+        {
+          status: 503,
+          headers: { 'content-type': 'application/json', 'x-request-id': 'req_456' },
+        }
+      )
+    );
+    const client = new HttpClient({
+      apiKey: 'sk_live_must_not_appear',
+      retry: { maxRetries: 0 },
+      telemetry: { enabled: false },
+      errorReporting: {
+        reporter: (report) => {
+          reports.push(report);
+          throw new Error('collector unavailable');
+        },
+      },
+    });
+
+    await expect(client.post('/orders/lookup', { orderId: 'ord_private' })).rejects.toMatchObject({
+      statusCode: 503,
+      requestId: 'req_456',
+    });
+
+    expect(reports).toHaveLength(1);
+    expect(reports[0]).toMatchObject({
+      schemaVersion: 1,
+      category: 'http_503',
+      operation: 'orders.lookup',
+      sdk: { language: 'typescript', version: SDK_VERSION },
+      http: {
+        method: 'POST',
+        route: '/orders/lookup',
+        serverAddress: 'api.inttegro.com',
+        statusCode: 503,
+        requestId: 'req_456',
+      },
+      apiError: {
+        type: 'transient_error',
+        code: 'provider_failed',
+        fixCode: 'repeat_same_request',
+      },
+    });
+    expect(reports[0]?.fingerprint).toBe('inttegro:typescript:orders.lookup:http_503:503');
+    expect(JSON.stringify(reports)).not.toContain('private provider detail');
+    expect(JSON.stringify(reports)).not.toContain('sk_live_must_not_appear');
+    expect(JSON.stringify(reports)).not.toContain('ord_private');
+  });
+
+  it('does not prepare default reports for expected API errors', async () => {
+    const reporter = vi.fn();
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ error: { type: 'invalid_request_parameter' } }), {
+        status: 400,
+        headers: { 'content-type': 'application/json' },
+      })
+    );
+    const client = new HttpClient({
+      apiKey: 'test',
+      retry: { maxRetries: 0 },
+      telemetry: { enabled: false },
+      errorReporting: { reporter },
+    });
+
+    const error = await client.get('/orders/lookup').catch((caught: unknown) => caught);
+    expect(error).toMatchObject({ statusCode: 400 });
+    expect((error as { report?: ErrorReport }).report).toBeUndefined();
+    expect(reporter).not.toHaveBeenCalled();
   });
 });

@@ -1,4 +1,5 @@
 import type { TracerProvider } from '@opentelemetry/api';
+import type { ErrorReportingConfig } from './error-reporting';
 
 /**
  * Configuration options for the Inttegro SDK
@@ -55,6 +56,8 @@ export interface InttegroConfig {
   debug?: boolean;
   /** Vendor-neutral SDK tracing. No telemetry is exported unless the application configures it. */
   telemetry?: TelemetryConfig;
+  /** Optional application-owned destination for privacy-safe SDK failure reports. */
+  errorReporting?: ErrorReportingConfig;
   /** Request interceptors */
   requestInterceptors?: RequestInterceptor[];
   /** Response interceptors */
@@ -64,9 +67,15 @@ export interface InttegroConfig {
 /**
  * Default configuration values
  */
-export const DEFAULT_CONFIG: Required<Omit<InttegroConfig, 'apiKey' | 'telemetry'>> & {
+export type ResolvedInttegroConfig = Required<
+  Omit<InttegroConfig, 'apiKey' | 'telemetry' | 'errorReporting'>
+> & {
+  apiKey: string;
   telemetry: TelemetryConfig & { enabled: boolean };
-} = {
+  errorReporting?: ErrorReportingConfig;
+};
+
+export const DEFAULT_CONFIG: Omit<ResolvedInttegroConfig, 'apiKey'> = {
   baseUrl: 'https://api.inttegro.com',
   timeout: 30000,
   retry: {

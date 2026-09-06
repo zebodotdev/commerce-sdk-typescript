@@ -7,6 +7,7 @@ import {
   DEFAULT_CONFIG,
   RequestInterceptor,
   ResponseInterceptor,
+  ResolvedInttegroConfig,
   RetryConfig,
 } from './config';
 import {
@@ -28,7 +29,7 @@ import { SDK_VERSION } from './version';
  * HTTP client for making requests to the Inttegro API
  */
 export class HttpClient {
-  private config: Required<InttegroConfig>;
+  private config: ResolvedInttegroConfig;
   private logger: Logger;
   private telemetry: Telemetry;
 
@@ -40,9 +41,13 @@ export class HttpClient {
         ...DEFAULT_CONFIG.retry,
         ...config.retry,
       },
+      telemetry: {
+        ...DEFAULT_CONFIG.telemetry,
+        ...config.telemetry,
+      },
     };
     this.logger = new Logger(this.config.debug);
-    this.telemetry = new Telemetry(this.config.telemetry, SDK_VERSION);
+    this.telemetry = new Telemetry(this.config.telemetry, SDK_VERSION, this.config.errorReporting);
   }
 
   /**
@@ -56,9 +61,13 @@ export class HttpClient {
         ...this.config.retry,
         ...config.retry,
       },
+      telemetry: {
+        ...this.config.telemetry,
+        ...config.telemetry,
+      },
     };
     this.logger.setEnabled(this.config.debug);
-    this.telemetry = new Telemetry(this.config.telemetry, SDK_VERSION);
+    this.telemetry = new Telemetry(this.config.telemetry, SDK_VERSION, this.config.errorReporting);
   }
 
   /**
@@ -160,6 +169,7 @@ export class HttpClient {
   private async handleErrorResponse(response: Response): Promise<never> {
     const errorData = await this.parseErrorResponse(response);
     const payload = errorData.error ?? errorData;
+    const requestId = response.headers.get('x-request-id') ?? undefined;
 
     // Handle authentication errors
     if (response.status === 401) {
@@ -172,7 +182,8 @@ export class HttpClient {
         payload.detail,
         payload.fixCode,
         payload.cause,
-        errorData
+        errorData,
+        requestId
       );
     }
 
@@ -189,12 +200,13 @@ export class HttpClient {
         payload.detail,
         payload.fixCode,
         payload.cause,
-        errorData
+        errorData,
+        requestId
       );
     }
 
     // Handle other errors
-    throw InttegroAPIError.fromResponse(response.status, errorData);
+    throw InttegroAPIError.fromResponse(response.status, errorData, requestId);
   }
 
   /**

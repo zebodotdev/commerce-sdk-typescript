@@ -10,6 +10,8 @@ import {
   type Tracer,
 } from '@opentelemetry/api';
 import type { TelemetryConfig } from './config';
+import type { ErrorReportingConfig } from './error-reporting';
+import { createErrorReport, shouldReport, submitErrorReport } from './error-reporting';
 import { InttegroAPIError, InttegroNetworkError } from './errors';
 
 const INSTRUMENTATION_NAME = '@inttegro/inttegro-sdk';
@@ -111,9 +113,15 @@ const headerSetter: TextMapSetter<Record<string, string>> = {
 export class Telemetry {
   private readonly enabled: boolean;
   private readonly tracer: Tracer;
+  private readonly errorReporting?: ErrorReportingConfig;
 
-  constructor(config: TelemetryConfig | undefined, version: string) {
+  constructor(
+    config: TelemetryConfig | undefined,
+    version: string,
+    errorReporting?: ErrorReportingConfig
+  ) {
     this.enabled = config?.enabled !== false;
+    this.errorReporting = errorReporting;
     const provider = config?.tracerProvider ?? trace.getTracerProvider();
     this.tracer = provider.getTracer(INSTRUMENTATION_NAME, version);
   }
@@ -126,9 +134,10 @@ export class Telemetry {
     operation: (span: Span | undefined) => Promise<T>,
     operationOverride?: string
   ): Promise<T> {
-    if (!this.enabled) return operation(undefined);
+    if (!this.enabled && !this.errorReporting) return operation(undefined);
 
     const details = requestDetails(pathOrUrl, baseUrl, operationOverride);
+    const startedAt = this.errorReporting ? performance.now() : undefined;
     const attributes: Attributes = {
       'inttegro.operation.name': details.operation,
       'inttegro.sdk.language': 'typescript',
@@ -138,22 +147,50 @@ export class Telemetry {
     };
     if (details.route) attributes['url.template'] = details.route;
 
+    const run = async (span: Span | undefined): Promise<T> => {
+      try {
+        return await operation(span);
+      } catch (error) {
+        const errorType = classifyError(error);
+        span?.setAttribute('error.type', errorType);
+        span?.setStatus({ code: SpanStatusCode.ERROR });
+        span?.addEvent('inttegro.request.failed', { 'error.type': errorType });
+        const reporting = this.errorReporting;
+        if (reporting) {
+          try {
+            if (shouldReport(error, errorType, reporting.policy ?? 'unexpected')) {
+              const report = createErrorReport({
+                error,
+                category: errorType,
+                operation: details.operation,
+                method,
+                route: details.route,
+                serverAddress: details.serverAddress,
+                version,
+                durationMs: performance.now() - (startedAt ?? performance.now()),
+                span,
+              });
+              if (error instanceof InttegroAPIError || error instanceof InttegroNetworkError) {
+                error.report = report;
+              }
+              submitErrorReport(reporting.reporter, report);
+            }
+          } catch {
+            // Report preparation must never replace the operation's original failure.
+          }
+        }
+        throw error;
+      } finally {
+        span?.end();
+      }
+    };
+
+    if (!this.enabled) return run(undefined);
+
     return this.tracer.startActiveSpan(
       `inttegro.${details.operation}`,
       { kind: SpanKind.CLIENT, attributes },
-      async (span) => {
-        try {
-          return await operation(span);
-        } catch (error) {
-          const errorType = classifyError(error);
-          span.setAttribute('error.type', errorType);
-          span.setStatus({ code: SpanStatusCode.ERROR });
-          span.addEvent('inttegro.request.failed', { 'error.type': errorType });
-          throw error;
-        } finally {
-          span.end();
-        }
-      }
+      run
     );
   }
 

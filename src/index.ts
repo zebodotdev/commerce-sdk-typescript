@@ -15,6 +15,7 @@ export type {
   RequestInterceptor,
   ResponseInterceptor,
 } from './config';
+export type { ErrorReport, ErrorReporter, ErrorReportingPolicy } from './error-reporting';
 
 // Error classes
 export {
