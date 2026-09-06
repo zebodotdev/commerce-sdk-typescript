@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/index.ts",
+    "src/error-reporting.ts",
+    "src/errors.ts",
+    "src/resources/*.ts",
+    "src/types/*.ts"
+  ],
+  "out": "build/api-docs",
+  "name": "Inttegro TypeScript SDK",
+  "includeVersion": true,
+  "readme": "README.md",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "githubPages": true,
+  "navigationLinks": {
+    "Studio": "https://studio.inttegro.com/sdks",
+    "GitHub": "https://github.com/zebodotdev/inttegro-sdk-typescript"
+  }
+}

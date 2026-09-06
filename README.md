@@ -4,6 +4,8 @@
 
 The official TypeScript client for building server-side Inttegro integrations.
 
+[API documentation](https://typescript.inttegro.dev/) · [Integration guides](https://studio.inttegro.com/sdks/typescript)
+
 > **Fastest, most modern path:** connect an agent to [Inttegro MCP](https://studio.inttegro.com/inttegro-mcp) at `https://mcp.inttegro.com`, then ask it to run `design_integration`. It will produce an implementation and test plan for your application. Use this SDK when you are ready to connect that plan to your TypeScript runtime.
 
 All official Inttegro SDKs expose the same API capabilities. This package adds TypeScript-specific types, tooling, and runtime controls.
