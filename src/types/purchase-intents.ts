@@ -159,7 +159,6 @@ export interface PurchaseIntentActivityLog {
 
 export interface PurchaseIntent {
   id: string;
-  applicationId: string;
   productId: string;
   priceId: string;
   quantity: PurchaseIntentQuantity;
