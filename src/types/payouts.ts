@@ -1,4 +1,5 @@
 import type { Amount } from './money';
+import type { CustomData } from './custom-data';
 
 export const PayoutStatuses = {
   Initialized: 'initialized',
@@ -31,12 +32,14 @@ export interface PayoutSchedule {
 export interface PayoutSettings {
   id?: string;
   fxEnabled?: boolean;
-  destinations?: Record<string, string>;
+  destinations?: PayoutDestinations;
   schedule?: PayoutSchedule | null;
 }
 
+export type PayoutDestinations = Readonly<Record<string, string>>;
+
 export interface SetPayoutDestinationsRequest {
-  destinations: Record<string, string>;
+  destinations: PayoutDestinations;
 }
 
 export interface SchedulePayoutRequest {
@@ -74,7 +77,7 @@ export interface Payout {
   scheduledAt?: string;
   scheduledBy?: string;
   canceledAt?: string;
-  customData?: Record<string, string>;
+  customData?: CustomData;
   error?: PayoutError | null;
   executedBy?: string;
   failedAt?: string | null;

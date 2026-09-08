@@ -1,4 +1,5 @@
 import type { RequestMeta } from './requests';
+import type { CustomData, CustomDataPatch } from './custom-data';
 
 export const PaymentMethodTypes = {
   MobileMoney: 'mobile_money',
@@ -96,7 +97,7 @@ export interface PaymentMethod {
   card?: PaymentMethodCard | null;
   owner?: PaymentMethodOwner | null;
   verification?: PaymentMethodVerification | null;
-  customData?: Record<string, string>;
+  customData?: CustomData;
   expiresOn?: string | null;
   createdAt: string;
   verified: boolean;
@@ -110,7 +111,7 @@ export interface TokenizePaymentMethodRequest {
   type: 'mobile_money';
   mobileMoney: MobileMoneyDetails;
   owner: PaymentMethodOwner;
-  customData?: Record<string, string>;
+  customData?: CustomData;
 }
 
 export interface VerifyPaymentMethodRequest {
@@ -156,7 +157,7 @@ export interface PaymentMethodPage {
 
 export interface UpdatePaymentMethodRequest {
   paymentMethodId: string;
-  customData?: Record<string, string | null>;
+  customData?: CustomDataPatch;
   active?: boolean;
   archived?: boolean;
   owner?: PaymentMethodOwner;

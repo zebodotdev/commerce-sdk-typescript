@@ -1,3 +1,5 @@
+import type { JSONData, JSONValue } from './custom-data';
+
 export const MessageTemplateChannels = { Sms: 'sms', Email: 'email' } as const;
 export type MessageTemplateChannel =
   (typeof MessageTemplateChannels)[keyof typeof MessageTemplateChannels];
@@ -51,8 +53,16 @@ export interface MessageTemplateVariable {
   name: string;
   type: MessageTemplateVariableType;
   about?: string;
-  default?: unknown;
-  items?: MessageTemplateVariable[];
+  default?: JSONValue;
+  items?: MessageTemplateVariableItem[];
+  required?: boolean;
+}
+
+export interface MessageTemplateVariableItem {
+  name: string;
+  type: MessageTemplateVariableItemType;
+  about?: string;
+  default?: JSONValue;
   required?: boolean;
 }
 
@@ -61,13 +71,15 @@ export interface MessageTemplateSmsContent {
 }
 
 export interface MessageTemplateMailbox {
-  email?: string;
+  address?: string;
   name?: string;
 }
 
+export type MessageHeaders = Readonly<Record<string, string>>;
+
 export interface MessageTemplateEmailContent {
   from?: MessageTemplateMailbox | null;
-  headers?: Record<string, string>;
+  headers?: MessageHeaders;
   html: string;
   replyTo?: MessageTemplateMailbox | null;
   subject: string;
@@ -139,7 +151,7 @@ export interface MessageTemplatePageRequest {
 
 export interface MessageTemplateReference {
   templateId: string;
-  variables?: Record<string, unknown>;
+  variables?: JSONData;
 }
 
 export interface MessageTemplateRenderPreviewRequest {
@@ -154,10 +166,40 @@ export interface MessageTemplatePage {
 
 export interface MessageTemplateRenderedContent {
   channel: MessageTemplateChannel;
-  email?: Record<string, unknown>;
+  attachments?: string[];
+  email?: RenderedEmailMessageTemplate;
   sms?: {
     fullMessage?: string;
   };
+}
+
+export interface MessageTemplateSafetyResult {
+  contentHash?: string;
+  links?: MessageTemplateScannedLink[];
+  normalizedText?: string;
+  quarantineNotes?: string;
+  reasonCodes?: string[];
+  sanitizedHtml?: string;
+  scanner?: string;
+  status?: ContentSafetyStatus;
+}
+
+export interface MessageTemplateScannedLink {
+  host?: string;
+  raw?: string;
+  reason?: string;
+  scheme?: string;
+  status?: string;
+}
+
+export interface RenderedEmailMessageTemplate {
+  subject?: string;
+  text?: string;
+  html?: string | null;
+  from?: MessageTemplateMailbox;
+  replyTo?: MessageTemplateMailbox;
+  headers?: MessageHeaders;
+  safety?: MessageTemplateSafetyResult;
 }
 
 export interface MessageTemplatePreview {

@@ -1,3 +1,5 @@
+import type { CustomData } from './custom-data';
+
 export const FileStatuses = {
   Uploading: 'uploading',
   Processing: 'processing',
@@ -77,7 +79,7 @@ export interface FileCreateRequest {
   filename?: string;
   purpose: string;
   title?: string;
-  customData?: Record<string, string>;
+  customData?: CustomData;
 }
 
 export interface FileLookupRequest {
@@ -114,6 +116,44 @@ export interface FileSource {
   id?: string;
 }
 
+export type FileMetadata = Readonly<Record<string, string>>;
+
+export interface FileLinkAccess {
+  kind?: FileLinkKind;
+}
+
+export interface FileLinkDelivery {
+  mode?: FileLinkDeliveryMode;
+}
+
+export interface FileResource {
+  id?: string;
+  name?: string;
+  type?: string;
+}
+
+export interface UploadRequestConstraints {
+  minSize?: number;
+  maxSize?: number;
+  exactSize?: number;
+  contentTypes?: string[];
+  extensions?: string[];
+  filename?: string;
+}
+
+export interface UploadRequestDisplay {
+  title?: string;
+  description?: string;
+  helpText?: string;
+}
+
+export interface UploadRequestAttempts {
+  maxAttempts?: number;
+  attemptCount?: number;
+  failedAttemptCount?: number;
+  lastAttemptedAt?: string;
+}
+
 export interface File {
   id: string;
   purpose: string;
@@ -127,7 +167,7 @@ export interface File {
   updatedAt?: string | null;
   deletedAt?: string | null;
   title?: string | null;
-  customData?: Record<string, string>;
+  customData?: CustomData;
   createdBy?: FileActor;
   source?: FileSource;
 }
@@ -139,12 +179,12 @@ export interface FilePage {
 }
 
 export interface FileLinkCreateRequest {
-  access?: Record<string, unknown>;
-  createdBy?: Record<string, unknown>;
-  delivery?: Record<string, unknown>;
+  access?: FileLinkAccess;
+  createdBy?: FileActor;
+  delivery?: FileLinkDelivery;
   expiresAt?: string;
   fileId: string;
-  customData?: Record<string, string>;
+  customData?: CustomData;
 }
 
 export interface FileLinkLookupRequest {
@@ -160,7 +200,7 @@ export interface FileLinkPageRequest {
 
 export interface FileLinkRevokeRequest {
   id: string;
-  revokedBy?: Record<string, unknown>;
+  revokedBy?: FileActor;
 }
 
 export interface FileLinkOpenRequest {
@@ -175,10 +215,10 @@ export interface FileLink {
   expiresAt?: string | null;
   createdAt?: string;
   revokedAt?: string | null;
-  customData?: Record<string, string>;
-  metadata?: Record<string, string>;
-  access?: Record<string, unknown>;
-  delivery?: Record<string, unknown>;
+  customData?: CustomData;
+  metadata?: FileMetadata;
+  access?: FileLinkAccess;
+  delivery?: FileLinkDelivery;
 }
 
 export interface FileLinkPage {
@@ -193,16 +233,16 @@ export interface FileLinkCreation {
 }
 
 export interface UploadRequestCreateRequest {
-  attempts?: Record<string, unknown>;
-  constraints?: Record<string, unknown>;
-  display?: Record<string, unknown>;
+  attempts?: Pick<UploadRequestAttempts, 'maxAttempts'>;
+  constraints?: UploadRequestConstraints;
+  display?: UploadRequestDisplay;
   expiresAt?: string;
-  customData?: Record<string, string>;
+  customData?: CustomData;
   purpose: string;
-  recipient?: Record<string, unknown>;
-  requester?: Record<string, unknown>;
-  resource?: Record<string, unknown>;
-  subject?: Record<string, unknown>;
+  recipient?: FileActor;
+  requester?: FileActor;
+  resource?: FileResource;
+  subject?: FileActor;
 }
 
 export interface UploadRequestLookupRequest {
@@ -213,12 +253,12 @@ export interface UploadRequestPageRequest {
   pageNumber?: number;
   pageSize?: number;
   purpose?: string;
-  resource?: Record<string, unknown>;
+  resource?: FileResource;
   status?: UploadRequestStatus;
 }
 
 export interface UploadRequestCancelRequest {
-  canceledBy?: Record<string, unknown>;
+  canceledBy?: FileActor;
   id: string;
 }
 
@@ -263,15 +303,15 @@ export interface UploadRequest {
   expiresAt?: string | null;
   createdAt?: string;
   canceledAt?: string | null;
-  customData?: Record<string, string>;
-  metadata?: Record<string, string>;
-  constraints?: Record<string, unknown>;
-  display?: Record<string, unknown>;
-  recipient?: Record<string, unknown>;
-  requester?: Record<string, unknown>;
-  resource?: Record<string, unknown>;
-  subject?: Record<string, unknown>;
-  attempts?: Record<string, unknown>;
+  customData?: CustomData;
+  metadata?: FileMetadata;
+  constraints?: UploadRequestConstraints;
+  display?: UploadRequestDisplay;
+  recipient?: FileActor;
+  requester?: FileActor;
+  resource?: FileResource;
+  subject?: FileActor;
+  attempts?: UploadRequestAttempts;
 }
 
 export interface UploadRequestPage {

@@ -1,5 +1,9 @@
-import type { CustomData } from './custom-data';
-import type { MessageTemplateReference } from './message-templates';
+import type { CustomData, JSONData } from './custom-data';
+import type {
+  MessageHeaders,
+  MessageTemplateReference,
+  MessageTemplateSafetyResult,
+} from './message-templates';
 import type { RequestMeta } from './requests';
 
 export const ChimeTransports = { Sms: 'sms', Email: 'email' } as const;
@@ -63,7 +67,7 @@ export interface ChimeEmailMessageInput {
   html?: string;
   from: ChimeEmailAddress;
   replyTo?: string;
-  headers?: Record<string, string>;
+  headers?: MessageHeaders;
 }
 
 export interface ChimeEmailMessage {
@@ -72,7 +76,9 @@ export interface ChimeEmailMessage {
   html?: string | null;
   from?: ChimeEmailAddress;
   replyTo?: ChimeEmailAddress;
-  headers?: Record<string, string>;
+  headers?: MessageHeaders;
+  safety?: MessageTemplateSafetyResult;
+  schema?: JSONData;
 }
 
 interface SendChimeRequestBase {
@@ -147,7 +153,6 @@ export interface Chime {
   senderId?: string;
   purpose?: string | null;
   customData?: CustomData;
-  delivery?: Record<string, unknown> | null;
   transmission?: ChimeTransmission | null;
 }
 
@@ -202,7 +207,7 @@ export interface Broadcast {
   errors?: BroadcastError[];
   chimeIds?: string[];
   customerIds?: string[];
-  email?: Record<string, unknown>;
+  email?: ChimeEmailMessage;
 }
 
 export interface LookupScheduleRequest {

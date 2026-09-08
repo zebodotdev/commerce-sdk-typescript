@@ -1,4 +1,5 @@
 import type { Amount, AmountParams } from './money';
+import type { CustomData } from './custom-data';
 import type { RequestMeta } from './requests';
 
 export const RefundReasons = {
@@ -34,7 +35,7 @@ export interface CreateRefundRequest {
   lineItems: CreateRefundLineItem[];
   orderId: string;
   reason: RefundReason;
-  customData?: Record<string, string>;
+  customData?: CustomData;
   reasonDetails?: string;
   reference?: string;
   requestMeta?: RequestMeta;
@@ -72,7 +73,7 @@ export interface Refund {
   status: RefundStatus;
   total: Amount;
   canceledAt?: string;
-  customData?: Record<string, string>;
+  customData?: CustomData;
   failedAt?: string;
   processingAt?: string;
   reasonDetails?: string;

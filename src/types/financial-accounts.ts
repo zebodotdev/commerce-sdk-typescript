@@ -1,5 +1,6 @@
 import type { BankAccountConfig, BankAccountOwner } from './bank-accounts';
 import type { WalletConfig } from './wallets';
+import type { CustomData, CustomDataInput, CustomDataPatch } from './custom-data';
 
 export const FinancialAccountTypes = {
   Wallet: 'wallet',
@@ -12,8 +13,29 @@ export type FinancialAccountType =
 export interface PullPushConfig {
   enabled?: boolean;
   enabledAt?: string;
-  mandate?: Record<string, unknown> | null;
+  mandate?: FinancialAccountMandate | null;
 }
+
+export interface FinancialAccountMandate {
+  id: string;
+  createdAt: string;
+  userAgent: string;
+  ipAddress: string;
+}
+
+export interface FinancialAccountVerificationRequest {
+  id?: string;
+  mechanism?: string;
+  type?: string;
+}
+
+export interface FinancialAccountVerification {
+  initiatedAt: string;
+  completedAt?: string | null;
+  request: FinancialAccountVerificationRequest;
+}
+
+export type DoshAccount = Readonly<Record<string, never>>;
 
 interface FinancialAccountRequestBase {
   label: string;
@@ -22,7 +44,7 @@ interface FinancialAccountRequestBase {
   description?: string;
   pullConfiguration?: PullPushConfig;
   pushConfiguration?: PullPushConfig;
-  customData?: Record<string, unknown>;
+  customData?: CustomDataInput;
 }
 
 export interface FinancialAccountWalletRequest extends FinancialAccountRequestBase {
@@ -44,7 +66,7 @@ export type FinancialAccountBankRequest = FinancialAccountRequestBase & {
 export interface FinancialAccountDoshRequest extends FinancialAccountRequestBase {
   type: 'dosh_account';
   owner: BankAccountOwner;
-  doshAccount: Record<string, never>;
+  doshAccount: DoshAccount;
   wallet?: never;
   bankAccount?: never;
 }
@@ -65,8 +87,9 @@ export interface FinancialAccount {
   pushConfiguration?: PullPushConfig;
   wallet?: WalletConfig;
   bankAccount?: BankAccountConfig;
-  doshAccount?: Record<string, unknown>;
-  customData?: Record<string, string>;
+  doshAccount?: DoshAccount;
+  customData?: CustomData;
+  verification?: FinancialAccountVerification;
   owner?: BankAccountOwner;
   disconnectedAt?: string | null;
   createdAt?: string;
@@ -77,7 +100,7 @@ export interface LookupFinancialAccountRequest {
 }
 
 export interface ArchiveFinancialAccountRequest {
-  accountId?: string;
+  accountId: string;
 }
 
 export interface PageFinancialAccountsRequest {
@@ -92,8 +115,8 @@ export interface FinancialAccountPage {
 }
 
 export interface VerifyFinancialAccountRequest {
-  accountId?: string;
-  [key: string]: unknown;
+  accountId: string;
+  token?: string;
 }
 
 export type ConnectFinancialAccountRequest = CreateFinancialAccountRequest;
@@ -103,7 +126,7 @@ export interface UpdateFinancialAccountRequest {
   label?: string;
   description?: string;
   reference?: string;
-  customData?: Record<string, string | null>;
+  customData?: CustomDataPatch;
   owner?: BankAccountOwner;
 }
 

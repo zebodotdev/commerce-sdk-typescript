@@ -1,4 +1,4 @@
-import type { CustomData } from './custom-data';
+import type { CustomData, JSONData } from './custom-data';
 import type { Amount, AmountParams } from './money';
 
 export const ProductTypes = {
@@ -68,8 +68,12 @@ export interface ProductDigitalDimensions {
 export interface ProductCustomDimensions {
   sizeUnit?: string;
   size?: number;
-  details?: Record<string, string>;
+  details?: ProductDimensionDetails;
 }
+
+export type ProductDimensionDetails = Readonly<Record<string, string>>;
+
+export type VariantValues = Readonly<Record<string, string>>;
 
 export type ProductDimensions =
   | { physical: ProductPhysicalDimensions; digital?: never; custom?: never }
@@ -83,11 +87,11 @@ export interface ProductAttribute {
 
 export interface ProductShipment {
   type: ProductShipmentType;
-  delivery?: Record<string, unknown>;
-  download?: Record<string, unknown>;
-  render?: Record<string, unknown>;
-  service?: Record<string, unknown>;
-  stream?: Record<string, unknown>;
+  delivery?: JSONData;
+  download?: JSONData;
+  render?: JSONData;
+  service?: JSONData;
+  stream?: JSONData;
 }
 
 export interface ProductShipmentInput {

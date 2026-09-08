@@ -10,4 +10,4 @@ export interface BalanceBreakdown {
   includesTransactionsBefore?: string;
 }
 
-export type BalanceSnapshot = Record<string, BalanceBreakdown>;
+export type BalanceSnapshot = Readonly<Record<string, BalanceBreakdown>>;

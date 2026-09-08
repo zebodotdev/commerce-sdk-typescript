@@ -6,7 +6,7 @@ import type { RequestMeta } from './requests';
 import { PaymentMethodData, MobileMoneyNetwork } from './payment-methods';
 import { Address, CustomerData } from './customer';
 import type { BankAccountConfig } from './bank-accounts';
-import type { FinancialAccountType } from './financial-accounts';
+import type { DoshAccount, FinancialAccountType } from './financial-accounts';
 import type { WalletType } from './wallets';
 import type { Payment, PaymentStatus } from './payments';
 import type { CreateRefundRequest, Refund } from './refunds';
@@ -177,7 +177,7 @@ export interface OrderPayoutSettings {
         };
       } | null;
       bankAccount?: BankAccountConfig | null;
-      doshAccount?: Record<string, unknown> | null;
+      doshAccount?: DoshAccount | null;
     };
   };
   /** Whether to enable foreign exchange conversion for this order's payout */

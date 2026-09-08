@@ -1,4 +1,5 @@
-import type { CustomData } from './custom-data';
+import type { CustomData, CustomDataInput } from './custom-data';
+import type { Amount } from './money';
 import type { RequestMeta } from './requests';
 
 export interface CustomerAddressInput {
@@ -25,7 +26,7 @@ export interface CustomerData {
   /** External reference for the customer */
   reference?: string;
   /** Custom data for the customer */
-  customData?: CustomData;
+  customData?: CustomDataInput;
 }
 
 /**
@@ -40,7 +41,7 @@ export interface CreateCustomerRequest {
   reference?: string;
   emailAddress?: string;
   phoneNumber?: string;
-  customData?: CustomData;
+  customData?: CustomDataInput;
   billingAddress?: CustomerAddressInput;
   shippingAddress?: CustomerAddressInput;
 }
@@ -48,7 +49,7 @@ export interface CreateCustomerRequest {
 export interface UpdateCustomerRequest {
   customerId: string;
   billingAddress?: CustomerAddressInput;
-  customData?: Record<string, unknown>;
+  customData?: CustomDataInput;
   emailAddress?: string;
   name?: string;
   phoneNumber?: string;
@@ -63,6 +64,8 @@ export interface LookupCustomerRequest {
 }
 
 export interface Customer {
+  balance: CustomerBalance;
+  billingAddress?: CustomerAddress | null;
   id: string;
   name: string;
   title?: string | null;
@@ -72,7 +75,19 @@ export interface Customer {
   phoneNumber?: string | null;
   customData?: CustomData;
   createdAt: string;
+  guest: boolean;
+  shippingAddress?: CustomerAddress | null;
+  updatedAt?: string | null;
 }
+
+export type CustomerAddress = CustomerAddressInput;
+
+export interface CustomerBalanceValue {
+  asOf: string;
+  available: Amount;
+}
+
+export type CustomerBalance = Readonly<Record<string, CustomerBalanceValue>>;
 
 export interface PageCustomersRequest {
   pageNumber?: number;

@@ -50,4 +50,4 @@ export interface CountrySpecification {
   banks?: CountryBankSpec;
 }
 
-export type CountrySpecifications = Record<string, CountrySpecification>;
+export type CountrySpecifications = Readonly<Record<string, CountrySpecification>>;

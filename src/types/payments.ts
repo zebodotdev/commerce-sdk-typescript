@@ -1,4 +1,5 @@
 import type { BalanceTransaction } from './balance-transactions';
+import type { JSONData } from './custom-data';
 import type { Amount } from './money';
 import type { PaymentMethod } from './payment-methods';
 
@@ -109,7 +110,7 @@ export interface PaymentNextAction {
       senderId: string;
     };
   };
-  execute?: Record<string, unknown>;
+  execute?: JSONData;
   redirect?: {
     url: string;
   };

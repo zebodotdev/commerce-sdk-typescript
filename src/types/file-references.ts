@@ -16,5 +16,12 @@ export interface FileReferenceReconcileRequest {
 
 export interface FileReferenceReconciliation {
   reconciled?: boolean;
-  error?: Record<string, unknown>;
+  error?: FileReferenceError;
+}
+
+export interface FileReferenceError {
+  type?: string;
+  code?: string;
+  message?: string;
+  fixCode?: string;
 }
