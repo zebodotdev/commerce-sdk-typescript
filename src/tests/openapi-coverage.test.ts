@@ -16,6 +16,7 @@ const CLIENT_CHECKOUT_PATHS = new Set([
   '/checkout/confirm_payment',
 ]);
 const PLATFORM_MANAGED_PATHS = new Set(['/sessions/new']);
+const LEGACY_COMPATIBILITY_PATHS = new Set(['/orders/refund']);
 
 interface OpenAPIDocument {
   paths?: Record<string, Record<string, unknown>>;
@@ -42,7 +43,8 @@ describe('OpenAPI coverage', () => {
         !sdkPaths.has(path) &&
         !EXTERNALLY_SUPPLIED_CAPABILITY_URL_PATHS.has(path) &&
         !CLIENT_CHECKOUT_PATHS.has(path) &&
-        !PLATFORM_MANAGED_PATHS.has(path)
+        !PLATFORM_MANAGED_PATHS.has(path) &&
+        !LEGACY_COMPATIBILITY_PATHS.has(path)
     );
 
     expect(
