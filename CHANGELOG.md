@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.0] - 2026-09-10
+
+- **Breaking:** replaced generic object maps with named models for balances, purchase intents, products, payment methods, payments, and orders.
+- **Breaking:** exposed API timestamps as `Date` values and accepted `Date` values for timestamp request fields.
+- Preserved opaque application metadata without interpreting timestamp-like keys inside it.
+
 ## [8.2.0] - 2026-09-06
 
 - Added opt-in, typed error reporting to application-owned collectors with privacy-safe payloads, stable fingerprints, isolated reporter failures, and no reporting work when unconfigured.
@@ -110,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🧪 Thoroughly tested
 - 📝 JSDoc documentation throughout
 
+[9.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v9.0.0
 [8.1.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v8.1.0
 [7.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v7.0.0
 [8.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v8.0.0
