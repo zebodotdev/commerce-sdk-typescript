@@ -19,7 +19,8 @@ describe('domain constants', () => {
     expect(Currencies.GHS).toBe('ghs');
     expect(MobileMoneyNetworks.MTN).toBe('mtn');
     expect(MobileMoneyNetworks.Telecel).toBe('telecel');
-    expect(PaymentNextActionTypes.Authorize).toBe('authorize');
+    expect(PaymentNextActionTypes.AuthorizePayment).toBe('authorize_payment');
+    expect(PaymentNextActionTypes.RequestConfirmation).toBe('request_confirmation');
     expect(PaymentStatuses.RequiresAction).toBe('requires_action');
     expect(RefundReasons.RequestedByCustomer).toBe('requested_by_customer');
     expect(UploadRequestStatuses.Pending).toBe('pending');

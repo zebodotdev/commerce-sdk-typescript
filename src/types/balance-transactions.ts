@@ -10,9 +10,9 @@ export interface LookupBalanceTransactionRequest {
 }
 
 export interface PayoutConfiguration {
-  enableFx?: boolean;
-  destination?: {
-    financialAccountId?: string;
+  enableFx: false;
+  destination: {
+    financialAccountId: string;
   };
 }
 
@@ -26,16 +26,10 @@ interface BalanceTransactionBase {
   payoutId?: string;
   orderId: string;
   amount: Amount;
-  createdAt: string;
-  availableAt?: string;
-  claimedAt?: string;
-  paidAt?: string;
-
-  /** @deprecated Not returned by the reviewed API. Use `amount`. */
-  amountExpected?: Amount;
-  /** @deprecated Not returned by the reviewed API. Use `amount`. */
-  amountAvailable?: Amount;
-  /** @deprecated Not returned on balance transactions by the reviewed API. */
+  createdAt: Date;
+  availableAt?: Date;
+  claimedAt?: Date;
+  paidAt?: Date;
   payoutConfiguration?: PayoutConfiguration | null;
 }
 

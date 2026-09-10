@@ -110,7 +110,7 @@ describe('Chimes', () => {
     const result = await chimes.schedule({
       recipients: ['+233544998605'],
       fullMessage: 'Hello',
-      sendAfter: '2026-01-18T10:00:00Z',
+      sendAfter: new Date('2026-01-18T10:00:00Z'),
     });
 
     expect(result).toEqual(mockScheduleResponse.scheduledChime);
@@ -127,7 +127,7 @@ describe('Chimes', () => {
         text: 'Your appointment is tomorrow.',
         from: { address: 'notifications@example.com' },
       },
-      sendAfter: '2026-01-18T10:00:00Z',
+      sendAfter: new Date('2026-01-18T10:00:00Z'),
     };
 
     const result = await chimes.schedule(request);
@@ -146,7 +146,7 @@ describe('Chimes', () => {
           text: 'Your appointment is tomorrow.',
           from: { address: 'notifications@example.com' },
         },
-        sendAfter: '2026-01-18T10:00:00Z',
+        sendAfter: new Date('2026-01-18T10:00:00Z'),
       } as any)
     ).rejects.toThrow('fullMessage and email cannot be provided together');
   });

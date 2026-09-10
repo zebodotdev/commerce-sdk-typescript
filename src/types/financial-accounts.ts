@@ -12,13 +12,13 @@ export type FinancialAccountType =
 
 export interface PullPushConfig {
   enabled?: boolean;
-  enabledAt?: string;
+  enabledAt?: Date;
   mandate?: FinancialAccountMandate | null;
 }
 
 export interface FinancialAccountMandate {
   id: string;
-  createdAt: string;
+  createdAt: Date;
   userAgent: string;
   ipAddress: string;
 }
@@ -30,8 +30,8 @@ export interface FinancialAccountVerificationRequest {
 }
 
 export interface FinancialAccountVerification {
-  initiatedAt: string;
-  completedAt?: string | null;
+  initiatedAt: Date;
+  completedAt?: Date | null;
   request: FinancialAccountVerificationRequest;
 }
 
@@ -91,8 +91,8 @@ export interface FinancialAccount {
   customData?: CustomData;
   verification?: FinancialAccountVerification;
   owner?: BankAccountOwner;
-  disconnectedAt?: string | null;
-  createdAt?: string;
+  disconnectedAt?: Date | null;
+  createdAt?: Date;
 }
 
 export interface LookupFinancialAccountRequest {

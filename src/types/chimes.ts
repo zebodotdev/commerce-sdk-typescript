@@ -108,7 +108,7 @@ export type SendChimeRequest =
 
 interface ScheduleChimeRequestBase {
   recipients: ChimeRecipient[];
-  sendAfter: string;
+  sendAfter: Date;
   senderId?: string;
   purpose?: string | null;
   requestMeta?: RequestMeta;
@@ -136,17 +136,17 @@ export interface LookupChimeRequest {
 }
 
 export interface ChimeTransmission {
-  createdAt?: string;
-  deliveredAt?: string | null;
-  failedAt?: string | null;
-  sentAt?: string | null;
+  createdAt?: Date;
+  deliveredAt?: Date | null;
+  failedAt?: Date | null;
+  sentAt?: Date | null;
   sentVia?: ChimeTransport | null;
   status?: string;
 }
 
 export interface Chime {
   id?: string;
-  createdAt?: string;
+  createdAt?: Date;
   fullMessage?: string;
   email?: ChimeEmailMessage;
   recipient?: ChimeRecipient;
@@ -200,10 +200,10 @@ export interface Broadcast {
   content?: string;
   senderId?: string;
   purpose?: string | null;
-  sendAfter?: string;
-  createdAt?: string;
-  executedAt?: string | null;
-  canceledAt?: string | null;
+  sendAfter?: Date;
+  createdAt?: Date;
+  executedAt?: Date | null;
+  canceledAt?: Date | null;
   errors?: BroadcastError[];
   chimeIds?: string[];
   customerIds?: string[];
@@ -230,10 +230,10 @@ export interface ScheduledChime {
   content?: string;
   senderId?: string;
   purpose?: string | null;
-  sendAfter?: string;
-  createdAt?: string;
-  executedAt?: string | null;
-  canceledAt?: string | null;
+  sendAfter?: Date;
+  createdAt?: Date;
+  executedAt?: Date | null;
+  canceledAt?: Date | null;
   errors?: ScheduleError[];
   chimeIds?: string[];
   fullMessage?: string;

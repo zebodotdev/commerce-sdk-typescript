@@ -87,8 +87,8 @@ export interface FileLookupRequest {
 }
 
 export interface FilePageRequest {
-  createdAfter?: string;
-  createdBefore?: string;
+  createdAfter?: Date;
+  createdBefore?: Date;
   pageNumber?: number;
   pageSize?: number;
   purpose?: string;
@@ -151,7 +151,7 @@ export interface UploadRequestAttempts {
   maxAttempts?: number;
   attemptCount?: number;
   failedAttemptCount?: number;
-  lastAttemptedAt?: string;
+  lastAttemptedAt?: Date;
 }
 
 export interface File {
@@ -163,9 +163,9 @@ export interface File {
   filename?: string | null;
   contentType?: string;
   size?: number;
-  createdAt?: string;
-  updatedAt?: string | null;
-  deletedAt?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date | null;
+  deletedAt?: Date | null;
   title?: string | null;
   customData?: CustomData;
   createdBy?: FileActor;
@@ -182,7 +182,7 @@ export interface FileLinkCreateRequest {
   access?: FileLinkAccess;
   createdBy?: FileActor;
   delivery?: FileLinkDelivery;
-  expiresAt?: string;
+  expiresAt?: Date;
   fileId: string;
   customData?: CustomData;
 }
@@ -212,9 +212,9 @@ export interface FileLink {
   id: string;
   fileId: string;
   status: FileLinkStatus;
-  expiresAt?: string | null;
-  createdAt?: string;
-  revokedAt?: string | null;
+  expiresAt?: Date | null;
+  createdAt?: Date;
+  revokedAt?: Date | null;
   customData?: CustomData;
   metadata?: FileMetadata;
   access?: FileLinkAccess;
@@ -236,7 +236,7 @@ export interface UploadRequestCreateRequest {
   attempts?: Pick<UploadRequestAttempts, 'maxAttempts'>;
   constraints?: UploadRequestConstraints;
   display?: UploadRequestDisplay;
-  expiresAt?: string;
+  expiresAt?: Date;
   customData?: CustomData;
   purpose: string;
   recipient?: FileActor;
@@ -300,9 +300,9 @@ export interface UploadRequest {
   purpose: string;
   status: UploadRequestStatus;
   uploadUrl?: string;
-  expiresAt?: string | null;
-  createdAt?: string;
-  canceledAt?: string | null;
+  expiresAt?: Date | null;
+  createdAt?: Date;
+  canceledAt?: Date | null;
   customData?: CustomData;
   metadata?: FileMetadata;
   constraints?: UploadRequestConstraints;

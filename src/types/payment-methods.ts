@@ -16,53 +16,36 @@ export const MobileMoneyNetworks = {
   Vodafone: 'vodafone',
 } as const;
 export type MobileMoneyNetwork = (typeof MobileMoneyNetworks)[keyof typeof MobileMoneyNetworks];
-/** @deprecated Prefer `MobileMoneyNetwork`. */
-export type MobileMoneyIssuer = MobileMoneyNetwork;
-
 export interface MobileMoneyDetails {
   accountNumber: string;
   network: MobileMoneyNetwork;
 }
 
 export interface PaymentMethodMobileMoney {
-  accountNumber?: string;
-  network?: MobileMoneyNetwork;
+  accountNumber: string;
+  last4: string;
+  network: MobileMoneyNetwork;
 }
 
 export interface PaymentMethodBankAccount {
-  type?: string;
+  type: string;
   ghanaBankAccount?: {
     branch?: string;
     name?: string;
-    accountNumber?: string;
+    accountNumber: string;
     sortCode?: string;
     swiftCode?: string;
   } | null;
 }
 
-export interface PaymentMethodCard {
-  brand?: string;
-  expiresOn?: string;
-  issuer?: {
-    emailAddress?: string;
-    name?: string;
-    phoneNumber?: string;
-    type?: string;
-  };
-  owner?: {
-    emailAddress?: string;
-    name?: string;
-    phoneNumber?: string;
-  };
-  type?: string;
-}
+export type PaymentMethodCard = Readonly<Record<string, never>>;
 
 export interface PaymentMethodVerification {
-  completedAt?: string | null;
-  initiatedAt?: string;
+  completedAt?: Date | null;
+  initiatedAt: Date;
   mechanism?: string;
-  requestId?: string;
-  type?: string;
+  requestId: string;
+  type: string;
 }
 
 export interface PaymentMethodData {
@@ -72,7 +55,7 @@ export interface PaymentMethodData {
 
 export interface PaymentMethodOwnerAddress {
   city?: string | null;
-  country?: string;
+  country: string;
   line1?: string | null;
   line2?: string | null;
   name?: string | null;
@@ -82,26 +65,36 @@ export interface PaymentMethodOwnerAddress {
 }
 
 export interface PaymentMethodOwner {
-  name?: string;
+  name: string;
   address?: PaymentMethodOwnerAddress | null;
 }
 
 export interface PaymentMethod {
   id: string;
-  active?: boolean;
-  archivedAt?: string | null;
+  active: boolean;
+  archivedAt?: Date | null;
   customerId: string;
   type: PaymentMethodType;
   mobileMoney?: PaymentMethodMobileMoney | null;
   bankAccount?: PaymentMethodBankAccount | null;
   card?: PaymentMethodCard | null;
   owner?: PaymentMethodOwner | null;
+  supplied?: PaymentMethodSupplied | null;
   verification?: PaymentMethodVerification | null;
-  customData?: CustomData;
-  expiresOn?: string | null;
-  createdAt: string;
-  verified: boolean;
-  verifiedAt?: string | null;
+  customData?: CustomData | null;
+  ephemeral?: boolean;
+  expiresOn?: Date | null;
+  createdAt: Date;
+  verifiedAt?: Date | null;
+}
+
+export interface PaymentMethodSupplied {
+  by: string;
+  channel?: string | null;
+  resourceType?: string | null;
+  resourceId?: string | null;
+  attemptId?: string | null;
+  suppliedAt: Date;
 }
 
 export interface TokenizePaymentMethodRequest {
@@ -125,13 +118,15 @@ export type VerificationStatus = 'pending' | 'verified' | 'failed' | string;
 export interface PaymentMethodVerificationSession {
   paymentMethodId?: string;
   status?: VerificationStatus;
-  tokenSentAt?: string;
-  expiresAt?: string;
-  delivery?: {
-    recipient?: string;
-    channel?: 'sms' | 'email' | string;
-    senderId?: string;
-  };
+  tokenSentAt?: Date;
+  expiresAt?: Date;
+  delivery?: PaymentMethodVerificationDelivery;
+}
+
+export interface PaymentMethodVerificationDelivery {
+  recipient?: string;
+  channel?: 'sms' | 'email' | string;
+  senderId?: string;
 }
 
 export interface ConfirmPaymentMethodVerificationRequest {
@@ -150,9 +145,9 @@ export interface PagePaymentMethodsRequest {
 }
 
 export interface PaymentMethodPage {
-  number?: number;
-  size?: number;
-  paymentMethods?: PaymentMethod[];
+  number: number;
+  size: number;
+  paymentMethods: PaymentMethod[];
 }
 
 export interface UpdatePaymentMethodRequest {
@@ -182,8 +177,8 @@ export interface PaymentMethodTypeSetting {
   type?: PaymentMethodType;
   name?: string;
   description?: string;
-  enabled?: boolean;
-  confirmsUse?: boolean;
+  enabled: boolean;
+  confirmsUse: boolean;
 }
 
 export interface PaymentMethodSettings {

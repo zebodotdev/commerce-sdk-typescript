@@ -65,20 +65,20 @@ export interface RefundLineItem {
 }
 
 export interface Refund {
-  createdAt: string;
+  createdAt: Date;
   id: string;
   lineItems: RefundLineItem[];
   orderId: string;
   reason: RefundReason;
   status: RefundStatus;
   total: Amount;
-  canceledAt?: string;
+  canceledAt?: Date;
   customData?: CustomData;
-  failedAt?: string;
-  processingAt?: string;
+  failedAt?: Date;
+  processingAt?: Date;
   reasonDetails?: string;
   reference?: string;
-  succeededAt?: string;
+  succeededAt?: Date;
 }
 
 export interface RefundPage {

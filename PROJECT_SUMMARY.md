@@ -178,7 +178,7 @@ npx tsx examples/basic-order.ts
 
 ### Orders Resource (/orders)
 
-✅ POST /orders/new - Create order
+✅ POST /orders/create - Create order
 ✅ POST /orders/lookup - Lookup order
 ✅ POST /orders/pay - Pay for order
 ✅ POST /orders/confirm_payment - Confirm payment

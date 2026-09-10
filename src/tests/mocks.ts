@@ -11,56 +11,21 @@ export const mockOrder: Order = {
   id: 'or_test_123456789',
   number: 'ORD-001',
   status: OrderStatuses.Preparing,
-  paymentStatus: PaymentStatuses.Initiated,
-  customerId: 'cu_test_123',
-  lineItems: [
-    {
-      type: 'product',
-      product: {
-        type: 'physical',
-        quantity: 1,
-        name: 'Test Product',
-        price: {
-          currency: 'ghs',
-          value: 20000,
-        },
-      },
-    },
-  ],
-  billingDetails: {
+  customer: {
+    id: 'cu_test_123',
     emailAddress: 'test@example.com',
     phoneNumber: '0559714200',
+    guest: false,
     name: 'Test User',
-    address: {
-      name: 'Test User',
-      phoneNumber: '0559714200',
-      line1: '123 Test St',
-      town: 'Accra',
-      region: 'Greater Accra',
-      country: 'GH',
-    },
   },
-  shipping: {
-    address: {
-      name: 'Test User',
-      phoneNumber: '0559714200',
-      line1: '123 Test St',
-      town: 'Accra',
-      region: 'Greater Accra',
-      country: 'GH',
-    },
+  payment: {
+    id: 'py_test_123',
+    statementDescriptor: 'Test order',
+    amount: { currency: 'ghs', value: 20000 },
+    status: PaymentStatuses.Initiated,
+    initiatedAt: new Date('2024-01-01T00:00:00Z'),
   },
-  total: {
-    currency: 'ghs',
-    value: 20000,
-  },
-  subtotal: {
-    currency: 'ghs',
-    value: 20000,
-  },
-  currency: 'ghs',
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
+  initiatedAt: new Date('2024-01-01T00:00:00Z'),
 };
 
 /**
@@ -77,8 +42,12 @@ export const mockCreateOrderResponse = {
 export const mockLookupOrderResponse = {
   order: {
     ...mockOrder,
-    paymentStatus: PaymentStatuses.Paid,
-    paidAt: '2024-01-01T00:05:00Z',
+    payment: {
+      ...mockOrder.payment!,
+      status: PaymentStatuses.Paid,
+      paidAt: new Date('2024-01-01T00:05:00Z'),
+    },
+    paidAt: new Date('2024-01-01T00:05:00Z'),
   },
 };
 
@@ -88,7 +57,10 @@ export const mockLookupOrderResponse = {
 export const mockPayOrderResponse = {
   order: {
     ...mockOrder,
-    paymentStatus: PaymentStatuses.RequiresAction,
+    payment: {
+      ...mockOrder.payment!,
+      status: PaymentStatuses.RequiresAction,
+    },
   },
 };
 
@@ -98,8 +70,12 @@ export const mockPayOrderResponse = {
 export const mockConfirmPaymentResponse = {
   order: {
     ...mockOrder,
-    paymentStatus: PaymentStatuses.Paid,
-    paidAt: '2024-01-01T00:05:00Z',
+    payment: {
+      ...mockOrder.payment!,
+      status: PaymentStatuses.Paid,
+      paidAt: new Date('2024-01-01T00:05:00Z'),
+    },
+    paidAt: new Date('2024-01-01T00:05:00Z'),
   },
 };
 
@@ -118,8 +94,8 @@ export const mockChimeResponse = {
     transmission: {
       sentVia: 'sms',
       status: 'sent',
-      createdAt: '2025-12-10T10:30:00Z',
-      sentAt: '2025-12-10T10:30:05Z',
+      createdAt: new Date('2025-12-10T10:30:00Z'),
+      sentAt: new Date('2025-12-10T10:30:05Z'),
       deliveredAt: null,
       failedAt: null,
     },
@@ -132,8 +108,8 @@ export const mockScheduleResponse = {
     recipients: ['+233244123456'],
     fullMessage: 'Hello! This is your scheduled reminder.',
     senderId: 'YourBrand',
-    sendAfter: '2026-01-18T10:00:00Z',
-    createdAt: '2026-01-17T15:30:00Z',
+    sendAfter: new Date('2026-01-18T10:00:00Z'),
+    createdAt: new Date('2026-01-17T15:30:00Z'),
     executedAt: null,
   },
 };
@@ -144,8 +120,8 @@ export const mockScheduleLookupResponse = {
     recipients: ['+233244123456'],
     content: 'Hello! This is your scheduled reminder.',
     senderId: 'YourBrand',
-    sendAfter: '2026-01-18T10:00:00Z',
-    createdAt: '2026-01-17T15:30:00Z',
+    sendAfter: new Date('2026-01-18T10:00:00Z'),
+    createdAt: new Date('2026-01-17T15:30:00Z'),
     executedAt: null,
     canceledAt: null,
     errors: [],
@@ -159,8 +135,8 @@ export const mockBroadcastResponse = {
     recipients: ['+233244123456'],
     content: 'Hello! This is your broadcast notification.',
     senderId: 'YourBrand',
-    sendAfter: '2026-01-18T10:00:00Z',
-    createdAt: '2026-01-18T10:00:00Z',
+    sendAfter: new Date('2026-01-18T10:00:00Z'),
+    createdAt: new Date('2026-01-18T10:00:00Z'),
     executedAt: null,
     canceledAt: null,
     errors: [],

@@ -64,16 +64,16 @@ export interface OtpTransmission {
   senderId?: string;
   sentVia?: string;
   status?: OTPTransmissionStatus;
-  sentAt?: string;
+  sentAt?: Date;
 }
 
 export interface OtpTransaction {
   id?: string;
   status?: OTPStatus;
   fullMessage?: string;
-  initiatedAt?: string;
-  expiresAt?: string;
-  canceledAt?: string | null;
+  initiatedAt?: Date;
+  expiresAt?: Date;
+  canceledAt?: Date | null;
   cancelReason?: string | null;
   transmission?: OtpTransmission | null;
   recipient?: string;
@@ -81,8 +81,8 @@ export interface OtpTransaction {
   mechanism?: string;
   gateway?: string;
   preferredGateway?: string;
-  createdAt?: string;
-  deliveredAt?: string;
+  createdAt?: Date;
+  deliveredAt?: Date;
   verifiableUntil?: string;
 }
 
@@ -90,7 +90,7 @@ export interface OtpVerificationAttempt {
   id?: string;
   recipient?: string;
   presentedToken?: string;
-  attemptedAt?: string;
+  attemptedAt?: Date;
   result?: {
     detail?: string | null;
     verdict?: string;

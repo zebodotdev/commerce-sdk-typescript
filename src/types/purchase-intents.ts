@@ -1,6 +1,14 @@
 import type { Amount } from './money';
 import type { PriceParams } from './prices';
-import type { Product } from './products';
+import type {
+  ProductAttribute,
+  ProductDimensions,
+  ProductMedia,
+  ProductPriceSummary,
+  ProductShipment,
+  ProductType,
+  VariantValues,
+} from './products';
 
 export const PurchaseIntentStatuses = {
   Active: 'active',
@@ -59,12 +67,18 @@ export interface PurchaseIntentQuantity {
 export interface PurchaseIntentUsage {
   singleUse?: boolean;
   multiUse?: boolean;
+  order?: PurchaseIntentUsageOrder;
+}
+
+export interface PurchaseIntentUsageOrder {
+  createdAt: Date;
+  id: string;
 }
 
 interface CreatePurchaseIntentBase {
   quantity: PurchaseIntentQuantity;
   usage?: PurchaseIntentUsage;
-  expiresAt?: string;
+  expiresAt?: Date;
 }
 
 type PurchaseIntentProductSelection =
@@ -94,7 +108,7 @@ export type CreatePurchaseIntentRequest = CreatePurchaseIntentBase &
 export interface UpdatePurchaseIntentRequest {
   id: string;
   quantity?: PurchaseIntentQuantity;
-  expiresAt?: string | null;
+  expiresAt?: Date | null;
   reactivate?: boolean;
 }
 
@@ -127,6 +141,7 @@ export interface PurchaseIntentActivityVisitor {
   sessionId?: string;
   visitorId?: string;
   userAgent?: string;
+  ipAddress?: string;
   device?: string;
   browser?: string;
   os?: string;
@@ -137,9 +152,9 @@ export interface PurchaseIntentActivityVisitor {
 }
 
 export interface PurchaseIntentActivity {
-  id?: string;
-  purchaseIntentId?: string;
-  type?: PurchaseIntentActivityType;
+  id: string;
+  purchaseIntentId: string;
+  type: PurchaseIntentActivityType;
   source?: string;
   attribution?: PurchaseIntentActivityAttribution;
   visitor?: PurchaseIntentActivityVisitor;
@@ -150,30 +165,88 @@ export interface PurchaseIntentActivity {
   orderId?: string;
   paymentId?: string;
   errorCode?: string;
-  createdAt?: string;
+  createdAt: Date;
 }
 
 export interface PurchaseIntentActivityLog {
   recent?: PurchaseIntentActivity[];
 }
 
-export interface PurchaseIntent {
+export interface PurchaseIntentMerchant {
+  appName?: string;
+  organizationId?: string;
+  organizationName?: string;
+}
+
+export interface PurchaseIntentProduct {
   id: string;
-  productId: string;
-  priceId: string;
-  quantity: PurchaseIntentQuantity;
-  adjustableQuantity: boolean;
-  allowVariants: boolean;
-  status: PurchaseIntentStatus;
-  createdAt: string;
-  updatedAt?: string | null;
-  activity?: PurchaseIntentActivityLog;
-  product?: Product;
+  about?: string;
+  active: boolean;
+  archivedAt?: Date | null;
+  attributes?: ProductAttribute[] | null;
+  category?: string;
+  createdAt: Date;
+  customData?: Readonly<Record<string, string>>;
+  description?: string;
+  dimensions?: ProductDimensions | null;
+  media?: ProductMedia | null;
+  name: string;
+  prices?: ProductPriceSummary[];
+  publishedAt?: Date | null;
+  reference?: string;
+  shipment?: ProductShipment | null;
+  taxCode?: string;
+  type: ProductType;
+  unitDim?: string;
+  updatedAt?: Date | null;
+  variantSetId?: string;
+}
+
+export interface PurchaseIntentVariantAxis {
+  key: string;
+  label: string;
+  position: number;
+}
+
+export interface PurchaseIntentVariant {
+  active: boolean;
+  position?: number;
   price?: PurchaseIntentPrice;
+  product?: PurchaseIntentProduct;
+  productId: string;
+  variantValues: VariantValues;
+}
+
+export interface PurchaseIntentVariantSet {
+  active: boolean;
+  defaultProductId?: string;
+  description?: string;
+  id: string;
+  name: string;
+  reference?: string;
+  variantAxes: PurchaseIntentVariantAxis[];
+  variants: PurchaseIntentVariant[];
+}
+
+export interface PurchaseIntent {
+  activity?: PurchaseIntentActivityLog;
+  allowVariants: boolean;
+  createdAt: Date;
+  expiresAt?: Date;
+  id: string;
+  inactiveAt?: Date;
+  merchant?: PurchaseIntentMerchant;
+  price?: PurchaseIntentPrice;
+  product?: PurchaseIntentProduct;
+  quantity: PurchaseIntentQuantity;
+  status: PurchaseIntentStatus;
+  updatedAt?: Date | null;
+  usage: PurchaseIntentUsage;
+  variantSet?: PurchaseIntentVariantSet;
 }
 
 export interface PurchaseIntentPage {
-  number?: number;
-  size?: number;
-  purchaseIntents?: PurchaseIntent[];
+  number: number;
+  size: number;
+  purchaseIntents: PurchaseIntent[];
 }

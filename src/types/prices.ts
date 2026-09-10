@@ -44,9 +44,9 @@ export interface CatalogPrice {
   nominal: Amount;
   productId?: string;
   product?: Product | null;
-  createdAt: string;
-  updatedAt?: string | null;
-  archivedAt?: string | null;
+  createdAt: Date;
+  updatedAt?: Date | null;
+  archivedAt?: Date | null;
 }
 
 export interface PricePage {

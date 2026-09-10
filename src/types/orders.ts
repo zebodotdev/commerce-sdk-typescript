@@ -1,5 +1,5 @@
 import type { CustomData } from './custom-data';
-import type { Amount, Currency } from './money';
+import type { Amount } from './money';
 import type { Price, PriceParams } from './prices';
 import type { ProductType } from './products';
 import type { RequestMeta } from './requests';
@@ -8,10 +8,15 @@ import { Address, CustomerData } from './customer';
 import type { BankAccountConfig } from './bank-accounts';
 import type { DoshAccount, FinancialAccountType } from './financial-accounts';
 import type { WalletType } from './wallets';
-import type { Payment, PaymentStatus } from './payments';
-import type { CreateRefundRequest, Refund } from './refunds';
+import type { Payment } from './payments';
+import type { Refund } from './refunds';
 
-export const LineItemTypes = { Product: 'product', Fee: 'fee', Shipping: 'shipping' } as const;
+export const LineItemTypes = {
+  Product: 'product',
+  Fee: 'fee',
+  Shipping: 'shipping',
+  Discount: 'discount',
+} as const;
 export type LineItemType = (typeof LineItemTypes)[keyof typeof LineItemTypes];
 
 export const OrderDocumentKinds = { Invoice: 'invoice', Receipt: 'receipt' } as const;
@@ -103,22 +108,43 @@ export type LineItemParams =
       shipping: ShippingLineItemParams;
     };
 
-export interface ProductLineItem extends Omit<ProductLineItemParams, 'price'> {
+export interface ProductLineItem {
+  id: string;
+  productId?: string;
+  priceId?: string;
+  reference?: string;
+  about?: string;
+  customData?: CustomData;
+  taxCode?: string;
+  name: string;
+  category?: string;
+  type?: ProductType;
   price: Price;
+  quantity: number;
 }
 
-export interface FeeLineItem extends Omit<FeeLineItemParams, 'amount'> {
+export interface FeeLineItem {
+  id: string;
+  description?: string;
+  taxCode?: string;
   amount: Amount;
+  label: string;
 }
 
-export interface ShippingLineItem extends Omit<ShippingLineItemParams, 'fee'> {
+export interface ShippingLineItem {
+  id: string;
+  taxCode?: string;
+  label?: string;
   fee: Amount;
 }
+
+export type DiscountLineItem = Readonly<Record<string, never>>;
 
 export type LineItem =
   | { type: 'product'; product: ProductLineItem }
   | { type: 'fee'; fee: FeeLineItem }
-  | { type: 'shipping'; shipping: ShippingLineItem };
+  | { type: 'shipping'; shipping: ShippingLineItem }
+  | { type: 'discount'; discount: DiscountLineItem };
 
 /**
  * Billing details for an order
@@ -399,9 +425,6 @@ export interface CancelOrderRequest {
   executeRefund?: boolean;
 }
 
-/** @deprecated Prefer `CreateRefundRequest` through `client.refunds.create`. */
-export type RefundOrderRequest = CreateRefundRequest;
-
 /**
  * Order status
  */
@@ -437,93 +460,68 @@ export interface LineItemGroup {
  */
 export interface InvoiceFormatDetails {
   url: string;
-  firstSeenAt?: string;
-  lastSeenAt?: string;
 }
 
-/**
- * Invoice details
- */
 export interface Invoice {
-  id?: string;
   number?: string;
-  deliveries?: {
-    id?: string;
-    format?: string;
-    sentAt?: string;
-    senderId?: string;
-    sentVia?: string;
-    sentTo?: string;
-  }[];
-  format?: {
-    web?: InvoiceFormatDetails;
-    pdf?: InvoiceFormatDetails;
+  format: {
+    web: InvoiceFormatDetails;
+    pdf: InvoiceFormatDetails;
+    receipt?: InvoiceFormatDetails;
   };
+}
+
+export interface OrderAddress {
+  name?: string;
+  phoneNumber?: string;
+  line1?: string;
+  line2?: string;
+  city?: string;
+  region?: string;
+  postCode?: string;
+  country: string;
+}
+
+export interface OrderCustomer {
+  id: string;
+  emailAddress?: string;
+  guest: boolean;
+  name: string;
+  phoneNumber?: string;
+  billingAddress?: OrderAddress;
+  shippingAddress?: OrderAddress;
+}
+
+export interface OrderCreatedFrom {
+  source?: string;
+  resourceType?: OrderCreatedFromResourceType;
+  resourceId?: string;
 }
 
 /**
  * Order response object
  */
 export interface Order {
-  /** Order ID */
   id: string;
-  /** Order status */
   status: OrderStatus;
-  /** Order number */
   number?: string;
-  /** Receipt number */
   receiptNumber?: string;
-  /** Invoice rendering metadata */
-  invoiceSettings?: InvoiceSettings;
-  /** Customer summary */
-  customer?: {
-    id: string;
-    name: string;
-    emailAddress: string;
-    phoneNumber: string;
-    createdAt?: string;
-  };
-  /** Customer ID */
-  customerId?: string;
-  /** Billing details */
-  billingDetails?: BillingDetails;
-  /** Shipping information */
-  shipping?: Shipping;
-  /** Totals */
-  total?: Amount;
-  subtotal?: Amount;
-  tax?: Amount;
-  currency?: Currency;
-  /** Order-level custom metadata */
-  customData?: CustomData | null;
-  /** Items (legacy) */
-  lineItems?: LineItem[];
-  /** Grouped items (current spec) */
-  lineItemGroup?: LineItemGroup;
-  /** Payment details */
-  payment?: Payment;
-  /** Legacy payment status */
-  paymentStatus?: PaymentStatus;
-  /** Payment method ID if saved */
-  paymentMethodId?: string;
-  /** Redirect URL */
-  redirectUrl?: string;
-  /** Statement descriptor */
-  statementDescriptor?: string;
-  /** Checkout settings */
+  reference?: string;
+  customer: OrderCustomer;
   checkoutSettings?: CheckoutSettings;
-  /** Lifecycle timestamps */
-  initiatedAt?: string;
-  sealedAt?: string;
-  completedAt?: string;
-  expiresAt?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  paidAt?: string;
-  cancelledAt?: string;
-  /** Invoice info */
+  invoiceSettings?: InvoiceSettings;
   invoice?: Invoice;
-  /** Refunds issued for this order, newest first. Omitted when none exist. */
+  lineItemGroup?: LineItemGroup;
+  payment?: Payment;
+  customData?: CustomData | null;
+  createdFrom?: OrderCreatedFrom;
+  initiatedAt: Date;
+  sealedAt?: Date;
+  completedAt?: Date;
+  paidAt?: Date;
+  canceledAt?: Date;
+  expiresAt?: Date;
+  paymentDueAt?: Date;
   refunds?: Refund[];
 }
 
@@ -564,7 +562,7 @@ export interface PageOrdersRequest {
 
 /** A page of orders returned by the Orders resource. */
 export interface OrderPage {
-  number?: number;
-  size?: number;
-  orders?: Order[];
+  number: number;
+  size: number;
+  orders: Order[];
 }

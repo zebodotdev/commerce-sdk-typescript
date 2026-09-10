@@ -42,9 +42,14 @@ describe('TypeScript API casing', () => {
         jsonResponse({
           order: {
             id: 'or_123',
+            created_at: '2026-09-10T08:15:30.123Z',
             payment_status: 'paid',
             line_items: [{ product_id: 'prod_123' }],
-            custom_data: { external_id: 'kept', camelKey: 'also-kept' },
+            custom_data: {
+              external_id: 'kept',
+              camelKey: 'also-kept',
+              created_at: 'opaque',
+            },
           },
         })
       )
@@ -53,6 +58,7 @@ describe('TypeScript API casing', () => {
     const client = new HttpClient({ apiKey: 'sk_test' });
     const response = await client.post<{
       order: {
+        createdAt: Date;
         paymentStatus: string;
         lineItems: Array<{ productId: string }>;
         customData: Record<string, string>;
@@ -60,9 +66,46 @@ describe('TypeScript API casing', () => {
     }>('/orders/lookup', { orderId: 'or_123' });
 
     expect(response.order.paymentStatus).toBe('paid');
+    expect(response.order.createdAt).toEqual(new Date('2026-09-10T08:15:30.123Z'));
     expect(response.order.lineItems[0].productId).toBe('prod_123');
-    expect(response.order.customData).toEqual({ external_id: 'kept', camelKey: 'also-kept' });
+    expect(response.order.customData).toEqual({
+      external_id: 'kept',
+      camelKey: 'also-kept',
+      created_at: 'opaque',
+    });
     expect((response.order as Record<string, unknown>).payment_status).toBeUndefined();
+  });
+
+  it('serializes Date request fields as ISO-8601 timestamps', async () => {
+    const calls: RequestInit[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string, options: RequestInit) => {
+        calls.push(options);
+        return jsonResponse({ purchase_intent: { id: 'sale_123' } });
+      })
+    );
+
+    const client = new HttpClient({ apiKey: 'sk_test' });
+    const expiresAt = new Date('2026-10-01T12:00:00.000Z');
+    await client.post('/purchase_intents/update', { id: 'sale_123', expiresAt });
+
+    expect(JSON.parse(calls[0].body as string)).toMatchObject({
+      id: 'sale_123',
+      expires_at: '2026-10-01T12:00:00.000Z',
+    });
+  });
+
+  it('rejects response timestamps without a UTC offset', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => jsonResponse({ order: { created_at: '2026-09-10T08:15:30' } }))
+    );
+
+    const client = new HttpClient({ apiKey: 'sk_test' });
+    await expect(client.post('/orders/lookup', { orderId: 'or_123' })).rejects.toThrow(
+      'timestamp without a UTC offset'
+    );
   });
 
   it('exposes error documents with camelCase fields', async () => {

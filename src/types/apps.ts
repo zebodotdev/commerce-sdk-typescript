@@ -44,7 +44,7 @@ export interface AppRelationship {
   childStanding: string;
   relationshipPolicy: Required<AppRelationshipPolicy>;
   retainedCreatorAuthorityExists: boolean;
-  createdAt: string;
+  createdAt: Date;
 }
 
 export interface App {
@@ -52,13 +52,13 @@ export interface App {
   name: string;
   alias?: string;
   description?: string;
-  createdAt: string;
-  updatedAt?: string;
-  archivedAt?: string;
+  createdAt: Date;
+  updatedAt?: Date;
+  archivedAt?: Date;
   secretKey?: {
     id: string;
     tokenType: string;
-    issuedAt: string;
+    issuedAt: Date;
     token: string;
   };
   relationship?: AppRelationship;

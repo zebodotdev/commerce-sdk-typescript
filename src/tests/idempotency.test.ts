@@ -20,7 +20,7 @@ describe('HttpClient idempotency', () => {
     );
 
     const client = new HttpClient({ apiKey: 'sk_test', baseUrl: 'https://api.inttegro.com' });
-    await client.post('/orders/new', { number: 'ORDER-1', idempotencyKey: 'legacy' });
+    await client.post('/orders/create', { number: 'ORDER-1', idempotencyKey: 'legacy' });
 
     const body = JSON.parse(calls[0].body as string);
     expect(body.idempotency_key).toBeUndefined();

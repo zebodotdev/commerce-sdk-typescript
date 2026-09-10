@@ -74,16 +74,16 @@ export interface Customer {
   emailAddress?: string | null;
   phoneNumber?: string | null;
   customData?: CustomData;
-  createdAt: string;
+  createdAt: Date;
   guest: boolean;
   shippingAddress?: CustomerAddress | null;
-  updatedAt?: string | null;
+  updatedAt?: Date | null;
 }
 
 export type CustomerAddress = CustomerAddressInput;
 
 export interface CustomerBalanceValue {
-  asOf: string;
+  asOf: Date;
   available: Amount;
 }
 
