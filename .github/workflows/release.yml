@@ -106,8 +106,6 @@ jobs:
           --verify-tag
 
       - name: Publish the exact artifact to npm with OIDC
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         shell: bash
         run: npm publish ./artifacts/*.tgz --access public --ignore-scripts --provenance
 

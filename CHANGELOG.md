@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.1] - 2026-09-10
+
+- Switched release publication to npm trusted publishing with short-lived OIDC credentials.
+
 ## [9.0.0] - 2026-09-10
 
 - **Breaking:** replaced generic object maps with named models for balances, purchase intents, products, payment methods, payments, and orders.
