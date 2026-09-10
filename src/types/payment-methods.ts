@@ -69,6 +69,22 @@ export interface PaymentMethodOwner {
   address?: PaymentMethodOwnerAddress | null;
 }
 
+export interface PaymentMethodOwnerAddressPatch {
+  city?: string | null;
+  country?: string | null;
+  line1?: string | null;
+  line2?: string | null;
+  name?: string | null;
+  phoneNumber?: string | null;
+  postCode?: string | null;
+  region?: string | null;
+}
+
+export interface PaymentMethodOwnerPatch {
+  name?: string | null;
+  address?: PaymentMethodOwnerAddressPatch | null;
+}
+
 export interface PaymentMethod {
   id: string;
   active: boolean;
@@ -155,7 +171,7 @@ export interface UpdatePaymentMethodRequest {
   customData?: CustomDataPatch;
   active?: boolean;
   archived?: boolean;
-  owner?: PaymentMethodOwner;
+  owner?: PaymentMethodOwnerPatch;
 }
 
 export interface PaymentMethodActionRequest {

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.2] - 2026-09-10
+
+- Added the complete typed file-link access request and response fields.
+- Added a separate partial owner shape for payment-method updates.
+
 ## [9.0.1] - 2026-09-10
 
 - Switched release publication to npm trusted publishing with short-lived OIDC credentials.
