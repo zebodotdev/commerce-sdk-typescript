@@ -10,9 +10,69 @@ const OPAQUE_FIELDS = new Set([
   'destinations',
   'details',
   'headers',
+  'jsonLd',
   'mandate',
   'metadata',
   'variables',
+]);
+
+/** Fields declared as `format: date-time` by the Commerce contract. */
+const TEMPORAL_FIELDS = new Set([
+  'after',
+  'archivedAt',
+  'asOf',
+  'at',
+  'attemptedAt',
+  'availableAt',
+  'canceledAt',
+  'checkedAt',
+  'claimedAt',
+  'completedAt',
+  'createdAfter',
+  'createdAt',
+  'createdBefore',
+  'deletedAt',
+  'deliveredAt',
+  'disconnectedAt',
+  'dueAt',
+  'enabledAt',
+  'executeAfter',
+  'executedAt',
+  'expectedAt',
+  'expiredAt',
+  'expiresAt',
+  'expiresOn',
+  'failedAt',
+  'fulfilledAt',
+  'inactiveAt',
+  'includesTransactionsBefore',
+  'initializedAt',
+  'initiatedAt',
+  'issuedAt',
+  'lastAccessedAt',
+  'lastAttemptedAt',
+  'lastEmailEventAt',
+  'lastUsedAt',
+  'occurredAt',
+  'paidAt',
+  'paymentDueAt',
+  'processingAt',
+  'publishedAt',
+  'queuedAt',
+  'reviewedAt',
+  'revokedAt',
+  'scheduledAt',
+  'sealedAt',
+  'sendAfter',
+  'sentAt',
+  'succeededAt',
+  'suppliedAt',
+  'suppressedAt',
+  'tokenSentAt',
+  'updatedAt',
+  'uploadingAt',
+  'validUntil',
+  'verifiedAt',
 ]);
 
 export function toCamelCase(value: string): string {
@@ -24,20 +84,24 @@ export function toSnakeCase(value: string): string {
 }
 
 export function toPublicValue<T>(value: T): T {
-  return transformObject(value, toCamelCase) as T;
+  return transformObject(value, toCamelCase, true) as T;
 }
 
 export function toWireValue<T>(value: T): T {
-  return transformObject(value, toSnakeCase) as T;
+  return transformObject(value, toSnakeCase, false) as T;
 }
 
 export function serializeRequestBody(value: unknown): string {
   return JSON.stringify(toWireValue(value));
 }
 
-function transformObject(value: unknown, transformKey: (key: string) => string): unknown {
+function transformObject(
+  value: unknown,
+  transformKey: (key: string) => string,
+  decodeTimestamps: boolean
+): unknown {
   if (Array.isArray(value)) {
-    return value.map((item) => transformObject(item, transformKey));
+    return value.map((item) => transformObject(item, transformKey, decodeTimestamps));
   }
 
   if (!isPlainObject(value)) {
@@ -50,10 +114,23 @@ function transformObject(value: unknown, transformKey: (key: string) => string):
       const transformedKey = transformKey(key);
       const transformedChild = OPAQUE_FIELDS.has(publicKey)
         ? child
-        : transformObject(child, transformKey);
+        : decodeTimestamps && TEMPORAL_FIELDS.has(publicKey) && typeof child === 'string'
+          ? parseTimestamp(child, key)
+          : transformObject(child, transformKey, decodeTimestamps);
       return [transformedKey, transformedChild];
     })
   );
+}
+
+function parseTimestamp(value: string, field: string): Date {
+  if (!/(?:Z|[+-]\d{2}:\d{2})$/.test(value)) {
+    throw new TypeError(`Inttegro returned a ${field} timestamp without a UTC offset: ${value}`);
+  }
+  const timestamp = new Date(value);
+  if (Number.isNaN(timestamp.getTime())) {
+    throw new TypeError(`Inttegro returned an invalid ${field} timestamp: ${value}`);
+  }
+  return timestamp;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

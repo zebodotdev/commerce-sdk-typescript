@@ -17,6 +17,8 @@ describe('Balances', () => {
       ghs: {
         available: { amount: 1000 },
         pending: { amount: 200 },
+        reserved: { amount: 100 },
+        refund: { amount: 50 },
         includesTransactionsBefore: '2024-01-01T00:00:00Z',
       },
     };

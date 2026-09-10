@@ -51,12 +51,9 @@ import {
   OrderDocumentDeliveryResult,
   CompleteOrderRequest,
   CancelOrderRequest,
-  RefundOrderRequest,
-  RequestOptions,
   PageOrdersRequest,
   Order,
   OrderPage,
-  Refund,
 } from '../types';
 import { validateRequired, throwIfValidationErrors } from '../utils/validation';
 
@@ -66,10 +63,6 @@ interface OrderEnvelope {
 
 interface OrderPageEnvelope {
   page: OrderPage;
-}
-
-interface RefundEnvelope {
-  refund: Refund;
 }
 
 /**
@@ -171,22 +164,6 @@ export class Orders {
 
     const response = await this.httpClient.post<OrderEnvelope>('/orders/create', request);
     return response.order;
-  }
-
-  /**
-   * Create a new order through the legacy compatibility route.
-   *
-   * Prefer `create`, which uses the canonical `/orders/create` endpoint.
-   */
-  async new(request: CreateOrderRequest): Promise<Order> {
-    validateCreateOrderRequest(request);
-
-    const response = await this.httpClient.post<OrderEnvelope>('/orders/new', request);
-    return response.order;
-  }
-
-  async createAlias(request: CreateOrderRequest): Promise<Order> {
-    return this.new(request);
   }
 
   /**
@@ -548,50 +525,6 @@ export class Orders {
 
     const response = await this.httpClient.post<OrderEnvelope>('/orders/cancel', request);
     return response.order;
-  }
-
-  /**
-   * Create a refund through the `/orders/refund` compatibility alias.
-   *
-   * This accepts the same line-item request as `refunds.create` and returns the created
-   * `Refund` directly. New integrations should prefer `refunds.create`.
-   *
-   * @param request - Refund parameters
-   * @param request.orderId - Unique identifier of the order to refund (required)
-   * @param options - Optional transport controls, including an explicit idempotency key
-   *
-   * @returns The created refund
-   *
-   * @throws {ApiError} If order not found, not paid, or refund fails
-   *
-   * @example
-   * ```typescript
-   * const refund = await inttegro.orders.refund({
-   *   orderId: 'or_0123456789abcdefghijklmnopqrstuvwxyzABCD',
-   *   reason: 'requested_by_customer',
-   *   lineItems: [{
-   *     orderLineItemId: 'oli_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMN',
-   *     refundAmount: { currency: 'ghs', value: 2500 },
-   *   }],
-   * });
-   *
-   * console.log(`Refund created: ${refund.id}`);
-   * ```
-   *
-   * @deprecated Prefer `inttegro.refunds.create`.
-   */
-  async refund(request: RefundOrderRequest, options: RequestOptions = {}): Promise<Refund> {
-    const errors = validateRequired(request as unknown as Record<string, unknown>, [
-      'line_items',
-      'order_id',
-      'reason',
-    ]);
-    throwIfValidationErrors(errors);
-
-    const response = await this.httpClient.post<RefundEnvelope>('/orders/refund', request, {
-      headers: options.idempotencyKey ? { 'Idempotency-Key': options.idempotencyKey } : {},
-    });
-    return response.refund;
   }
 
   /**

@@ -99,28 +99,6 @@ describe('Orders', () => {
       expect(postSpy).toHaveBeenCalledWith('/orders/create', expect.any(Object));
     });
 
-    it('should create an order through the legacy alias', async () => {
-      const postSpy = vi.spyOn(httpClient, 'post').mockResolvedValue(mockCreateOrderResponse);
-
-      const result = await orders.new({
-        customerId: 'cu_123',
-        lineItems: [
-          {
-            type: 'product',
-            product: {
-              type: 'physical',
-              quantity: 1,
-              name: 'Test Product',
-              price: { currency: 'ghs', value: 20000 },
-            },
-          },
-        ],
-      });
-
-      expect(result).toEqual(mockCreateOrderResponse.order);
-      expect(postSpy).toHaveBeenCalledWith('/orders/new', expect.any(Object));
-    });
-
     it('should throw validation error when required fields are missing', async () => {
       await expect(
         orders.create({
@@ -360,29 +338,6 @@ describe('Orders', () => {
       const result = await orders.cancel({ orderId: 'or_123' });
       expect(result).toEqual(mockLookupOrderResponse.order);
       expect(postSpy).toHaveBeenCalledWith('/orders/cancel', { orderId: 'or_123' });
-    });
-  });
-
-  describe('refund', () => {
-    it('should use the same request and response shape as refunds.create', async () => {
-      const response = { refund: { id: 'rf_123' } };
-      const postSpy = vi.spyOn(httpClient, 'post').mockResolvedValue(response);
-      const request = {
-        lineItems: [
-          {
-            orderLineItemId: 'oli_123',
-            refundAmount: { currency: 'ghs', value: 2500 },
-          },
-        ],
-        orderId: 'or_123',
-        reason: 'requested_by_customer' as const,
-      };
-
-      const result = await orders.refund(request, { idempotencyKey: 'refund-alias-1' });
-      expect(result).toEqual(response.refund);
-      expect(postSpy).toHaveBeenCalledWith('/orders/refund', request, {
-        headers: { 'Idempotency-Key': 'refund-alias-1' },
-      });
     });
   });
 });

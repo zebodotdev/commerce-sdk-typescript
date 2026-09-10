@@ -1,13 +1,15 @@
 export interface BalanceAmount {
-  amount?: number;
+  readonly amount: number;
 }
 
 export interface BalanceBreakdown {
-  available?: BalanceAmount;
-  pending?: BalanceAmount;
-  reserved?: BalanceAmount;
-  refund?: BalanceAmount;
-  includesTransactionsBefore?: string;
+  readonly available: BalanceAmount;
+  readonly pending: BalanceAmount;
+  readonly reserved: BalanceAmount;
+  readonly refund: BalanceAmount;
+  readonly includesTransactionsBefore: Date;
 }
 
-export type BalanceSnapshot = Readonly<Record<string, BalanceBreakdown>>;
+export interface BalanceSnapshot {
+  readonly ghs: BalanceBreakdown;
+}

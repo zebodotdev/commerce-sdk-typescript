@@ -44,7 +44,7 @@ export interface SetPayoutDestinationsRequest {
 
 export interface SchedulePayoutRequest {
   destinationId: string;
-  executeAfter?: string;
+  executeAfter?: Date;
   maxAmount: number;
   reference: string;
 }
@@ -62,7 +62,7 @@ export interface PayoutError {
   type?: string;
   message?: string;
   cause?: string;
-  occurredAt?: string;
+  occurredAt?: Date;
 }
 
 export interface Payout {
@@ -73,25 +73,25 @@ export interface Payout {
   balanceTransactions?: string[];
   status?: PayoutStatus;
   initiatedBy?: string;
-  executeAfter?: string;
-  scheduledAt?: string;
+  executeAfter?: Date;
+  scheduledAt?: Date;
   scheduledBy?: string;
-  canceledAt?: string;
+  canceledAt?: Date;
   customData?: CustomData;
   error?: PayoutError | null;
   executedBy?: string;
-  failedAt?: string | null;
+  failedAt?: Date | null;
   maxAmount?: Amount;
   latestAttemptId?: string;
   latestError?: PayoutError;
   reference?: string;
   scheduleId?: string;
-  sentAt?: string | null;
+  sentAt?: Date | null;
   sourceId?: string;
-  initiatedAt?: string;
-  executedAt?: string;
-  expectedAt?: string;
-  succeededAt?: string;
+  initiatedAt?: Date;
+  executedAt?: Date;
+  expectedAt?: Date;
+  succeededAt?: Date;
   balanceTransactionIds?: string[];
 }
 

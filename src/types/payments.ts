@@ -1,7 +1,6 @@
 import type { BalanceTransaction } from './balance-transactions';
-import type { JSONData } from './custom-data';
 import type { Amount } from './money';
-import type { PaymentMethod } from './payment-methods';
+import type { MobileMoneyNetwork, PaymentMethodType } from './payment-methods';
 
 export const PaymentStatuses = {
   Initiated: 'initiated',
@@ -52,66 +51,169 @@ export const PaymentResultStatuses = {
 export type PaymentResultStatus =
   (typeof PaymentResultStatuses)[keyof typeof PaymentResultStatuses];
 
-/** Payout configuration attached to a payment. */
 export interface PaymentPayoutConfiguration {
-  enableFx?: boolean;
-  destination?: {
-    financialAccountId?: string;
+  enableFx: boolean;
+  destination: {
+    financialAccountId: string;
   };
 }
 
-/** Latest attempt to execute a payment. */
+export interface PaymentAttemptError {
+  message: string;
+}
+
 export interface PaymentAttempt {
-  paymentMethodType?: PaymentMethod['type'];
+  paymentMethodType?: PaymentMethodType;
   paymentMethodId?: string;
+  error?: PaymentAttemptError;
   reference?: string;
-  status?: PaymentAttemptStatus;
-  initiatedAt?: string;
-  succeededAt?: string;
+  status: PaymentAttemptStatus;
+  initiatedAt: Date;
+  succeededAt?: Date;
+}
+
+export interface PaymentAddress {
+  name?: string;
+  phoneNumber?: string;
+  line1?: string;
+  line2?: string;
+  city?: string;
+  region?: string;
+  postCode?: string;
+  country: string;
+}
+
+export interface PaymentCustomer {
+  id: string;
+  emailAddress?: string;
+  guest: boolean;
+  name: string;
+  phoneNumber?: string;
+  billingAddress?: PaymentAddress;
+  shippingAddress?: PaymentAddress;
+}
+
+export interface PaymentMethodSnapshotOwner {
+  name: string;
+  address?: PaymentAddress;
+}
+
+export interface PaymentMethodSnapshot {
+  id: string;
+  bankAccount?: {
+    type: string;
+    ghanaBankAccount?: {
+      accountNumber: string;
+      branch?: string;
+      name?: string;
+      sortCode?: string;
+      swiftCode?: string;
+    };
+  };
+  card?: Readonly<Record<string, never>>;
+  createdAt: Date;
+  customerId: string;
+  mobileMoney?: {
+    network: MobileMoneyNetwork;
+    accountNumber: string;
+    last4: string;
+  };
+  owner?: PaymentMethodSnapshotOwner;
+  type: PaymentMethodType;
+  verified: boolean;
+  verifiedAt?: Date;
+}
+
+export interface PaymentBillingDetails {
+  owner?: PaymentMethodSnapshotOwner;
+}
+
+export interface PaymentError {
+  message: string;
+  docsUrl: string;
+  source: string;
+  type: string;
+  code: string;
 }
 
 /** A payment collected for an order. */
 export interface Payment {
-  id?: string;
-  status?: PaymentStatus;
-  statementDescriptor?: string;
-  amount?: Amount;
-  paymentMethod?: PaymentMethod;
+  id: string;
+  statementDescriptor: string;
+  paymentMethodTypes?: string[];
+  paymentMethod?: PaymentMethodSnapshot;
+  billingDetails?: PaymentBillingDetails;
+  customer?: PaymentCustomer;
   latestAttempt?: PaymentAttempt;
+  amount: Amount;
   nextAction?: PaymentNextAction | null;
-  payoutConfiguration?: PaymentPayoutConfiguration | null;
+  latestError?: PaymentError;
   balanceTransaction?: BalanceTransaction | null;
-  initiatedAt?: string;
-  executedAt?: string;
-  paidAt?: string;
-  failedAt?: string;
+  payoutConfiguration?: PaymentPayoutConfiguration | null;
+  status: PaymentStatus;
+  initiatedAt: Date;
+  executedAt?: Date;
+  dueAt?: Date;
+  canceledAt?: Date;
+  expiredAt?: Date;
+  paidAt?: Date;
+  paidOffline?: boolean;
+  failedAt?: Date;
 }
 
 export const PaymentNextActionTypes = {
   ConfirmPayment: 'confirm_payment',
   Execute: 'execute',
   Redirect: 'redirect',
-  Authorize: 'authorize',
-  None: 'none',
+  AuthorizePayment: 'authorize_payment',
+  RequestConfirmation: 'request_confirmation',
 } as const;
 export type PaymentNextActionType =
   (typeof PaymentNextActionTypes)[keyof typeof PaymentNextActionTypes];
 
+export interface PaymentConfirmationRequest {
+  id: string;
+  recipient: string;
+  sentVia: PaymentConfirmationChannel;
+  tokenSize: number;
+  senderId: string;
+  status?: string;
+}
+
+export interface PaymentConfirmationAttempt {
+  status: string;
+  confirmed: boolean;
+  reason: string;
+  executedAt?: Date;
+  createdAt: Date;
+}
+
 export interface PaymentNextAction {
   type: PaymentNextActionType;
   confirmPayment?: {
-    expiresAt: string;
-    scheme?: string;
-    request?: {
-      id: string;
-      recipient: string;
-      sentVia: PaymentConfirmationChannel;
-      tokenSize: number;
-      senderId: string;
-    };
+    expiresAt: Date;
+    scheme: string;
+    request?: PaymentConfirmationRequest;
+    attempt?: PaymentConfirmationAttempt;
+    confirmed: boolean;
+    status: string;
   };
-  execute?: JSONData;
   redirect?: {
-    url: string;
+    validUntil: Date;
+    latestVisit?: {
+      userAgent: string;
+      ipAddress: string;
+      at: Date;
+    };
+    redirectUrl: string;
+  };
+  authorize?: {
+    beneficiary: string;
+    expiresAt: Date;
+    scheme: string;
+  };
+  requestConfirmation?: {
+    lastRequest?: PaymentConfirmationRequest;
+    after?: Date;
   };
 }

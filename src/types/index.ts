@@ -53,7 +53,6 @@ export type {
   FinalizeOrderRequest,
   CompleteOrderRequest,
   CancelOrderRequest,
-  RefundOrderRequest,
   OrderStatus,
   CheckoutSettings,
   LineItemGroup,

@@ -88,21 +88,21 @@ export interface MessageTemplateEmailContent {
 export interface MessageTemplate {
   id: string;
   about?: string | null;
-  archivedAt?: string | null;
+  archivedAt?: Date | null;
   attachments?: string[];
   channel: MessageTemplateChannel;
-  createdAt: string;
+  createdAt: Date;
   draftVersion: number;
   email?: MessageTemplateEmailContent | null;
   hasUnpublishedChanges: boolean;
   locale: string;
   name: string;
-  publishedAt?: string | null;
+  publishedAt?: Date | null;
   publishedVersion?: number | null;
   purpose: string;
   sms?: MessageTemplateSmsContent | null;
   status: MessageTemplateStatus;
-  updatedAt: string;
+  updatedAt: Date;
   variables?: MessageTemplateVariable[];
   version: number;
 }

@@ -19,7 +19,7 @@ export interface GeneratedSecretKey {
   id: string;
   label?: string;
   tokenType: SecretKeyTokenType;
-  issuedAt: string;
+  issuedAt: Date;
   token: string;
 }
 
@@ -27,13 +27,13 @@ export interface SecretKey {
   id: string;
   label?: string;
   tokenType: SecretKeyTokenType;
-  issuedAt: string;
-  updatedAt?: string;
-  expiresAt?: string;
+  issuedAt: Date;
+  updatedAt?: Date;
+  expiresAt?: Date;
   status: SecretKeyStatus;
   active: boolean;
-  revokedAt?: string;
-  lastUsedAt?: string;
+  revokedAt?: Date;
+  lastUsedAt?: Date;
   usageCount?: number;
 }
 
@@ -70,7 +70,7 @@ export interface SecretKeyUsageRequest extends LookupSecretKeyRequest {
 
 export interface SecretKeyUsageRow {
   secretKeyId: string;
-  occurredAt: string;
+  occurredAt: Date;
   authResult: SecretKeyAuthResult;
 }
 

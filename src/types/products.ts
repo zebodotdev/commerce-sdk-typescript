@@ -1,4 +1,4 @@
-import type { CustomData, JSONData } from './custom-data';
+import type { CustomData } from './custom-data';
 import type { Amount, AmountParams } from './money';
 
 export const ProductTypes = {
@@ -36,9 +36,9 @@ export interface ProductDefaultUnitPrice {
   label?: string | null;
   about?: string | null;
   nominal: Amount;
-  createdAt: string;
-  updatedAt?: string | null;
-  archivedAt?: string | null;
+  createdAt: Date;
+  updatedAt?: Date | null;
+  archivedAt?: Date | null;
 }
 
 export interface ProductPriceSummary {
@@ -87,12 +87,18 @@ export interface ProductAttribute {
 
 export interface ProductShipment {
   type: ProductShipmentType;
-  delivery?: JSONData;
-  download?: JSONData;
-  render?: JSONData;
-  service?: JSONData;
-  stream?: JSONData;
+  delivery?: ProductDelivery;
+  download?: ProductDownload;
+  render?: ProductRender;
+  service?: ProductService;
+  stream?: ProductStream;
 }
+
+export type ProductDelivery = Readonly<Record<string, never>>;
+export type ProductDownload = Readonly<Record<string, never>>;
+export type ProductRender = Readonly<Record<string, never>>;
+export type ProductService = Readonly<Record<string, never>>;
+export type ProductStream = Readonly<Record<string, never>>;
 
 export interface ProductShipmentInput {
   type: ProductShipmentInputType;
@@ -171,7 +177,6 @@ export interface PageProductsRequest {
 
 export interface Product {
   id: string;
-  applicationId?: string;
   type: ProductType;
   reference?: string | null;
   name: string;
@@ -186,15 +191,15 @@ export interface Product {
   dimensions?: ProductDimensions | null;
   customData?: CustomData | null;
   active: boolean;
-  createdAt: string;
-  updatedAt?: string | null;
-  archivedAt?: string | null;
-  publishedAt?: string | null;
+  createdAt: Date;
+  updatedAt?: Date | null;
+  archivedAt?: Date | null;
+  publishedAt?: Date | null;
   unitDim?: string | null;
 }
 
 export interface ProductPage {
-  number?: number;
-  size?: number;
-  products?: Product[];
+  number: number;
+  size: number;
+  products: Product[];
 }
