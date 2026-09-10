@@ -118,8 +118,19 @@ export interface FileSource {
 
 export type FileMetadata = Readonly<Record<string, string>>;
 
+export interface FileLinkAccessRequest {
+  maxAccesses?: number;
+  allowDownload?: boolean;
+  allowedOrigins?: string[];
+  allowedIpRanges?: string[];
+}
+
 export interface FileLinkAccess {
-  kind?: FileLinkKind;
+  maxAccesses?: number;
+  accessCount?: number;
+  lastAccessedAt?: Date | null;
+  allowDownload?: boolean;
+  allowedOrigins?: string[];
 }
 
 export interface FileLinkDelivery {
@@ -179,7 +190,7 @@ export interface FilePage {
 }
 
 export interface FileLinkCreateRequest {
-  access?: FileLinkAccess;
+  access?: FileLinkAccessRequest;
   createdBy?: FileActor;
   delivery?: FileLinkDelivery;
   expiresAt?: Date;

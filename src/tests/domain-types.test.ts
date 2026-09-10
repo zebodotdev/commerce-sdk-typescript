@@ -11,7 +11,13 @@ import {
   UploadRequestStatuses,
   wallets,
 } from '../index';
-import type { CatalogPrice, CatalogPriceParams, PriceParams } from '../index';
+import type {
+  CatalogPrice,
+  CatalogPriceParams,
+  FileLinkCreateRequest,
+  PriceParams,
+  UpdatePaymentMethodRequest,
+} from '../index';
 
 describe('domain constants', () => {
   it('exposes exact wire values through the public package', () => {
@@ -58,5 +64,20 @@ describe('domain constants', () => {
       createdAt: '2026-09-02T12:00:00Z',
     };
     expect(returned.productId).toBe('prod_123');
+  });
+
+  it('uses request-specific file-link access and payment-method owner patches', () => {
+    const fileLink: FileLinkCreateRequest = {
+      fileId: 'file_123',
+      access: { allowDownload: true, allowedIpRanges: ['192.0.2.0/24'] },
+      expiresAt: new Date('2030-07-06T12:30:00Z'),
+    };
+    const paymentMethod: UpdatePaymentMethodRequest = {
+      paymentMethodId: 'pm_123',
+      owner: { address: { line1: '1 High Street', region: 'Greater Accra' } },
+    };
+
+    expect(fileLink.access?.allowDownload).toBe(true);
+    expect(paymentMethod.owner?.address?.region).toBe('Greater Accra');
   });
 });
