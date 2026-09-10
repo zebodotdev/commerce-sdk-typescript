@@ -20,6 +20,7 @@ export {
   CheckoutOrderStatuses,
   OrderStatuses,
   OrderCreatedFromResourceTypes,
+  Order,
 } from './orders';
 export type {
   LineItemType,
@@ -58,7 +59,6 @@ export type {
   LineItemGroup,
   InvoiceFormatDetails,
   Invoice,
-  Order,
   OrderDocumentDeliveryRequest,
   OrderDocumentDeliveryAttempt,
   OrderDocumentDelivery,

@@ -161,6 +161,36 @@ export interface Payment {
   failedAt?: Date;
 }
 
+/** Deterministic questions about a payment response. */
+export const Payment = {
+  /** Whether the payment completed successfully. */
+  isPaid(payment: Payment): boolean {
+    return payment.status === PaymentStatuses.Paid;
+  },
+
+  /** Whether the payment is waiting for customer or merchant action. */
+  requiresAction(payment: Payment): boolean {
+    return payment.status === PaymentStatuses.RequiresAction;
+  },
+
+  /** Whether the payment has reached a final state. */
+  isTerminal(payment: Payment): boolean {
+    return (
+      payment.status === PaymentStatuses.Paid ||
+      payment.status === PaymentStatuses.Canceled ||
+      payment.status === PaymentStatuses.Expired ||
+      payment.status === PaymentStatuses.Failed
+    );
+  },
+
+  /** Action details when the payment currently requires action. */
+  requiredAction(payment: Payment): PaymentNextAction | undefined {
+    return payment.status === PaymentStatuses.RequiresAction
+      ? (payment.nextAction ?? undefined)
+      : undefined;
+  },
+} as const;
+
 export const PaymentNextActionTypes = {
   ConfirmPayment: 'confirm_payment',
   Execute: 'execute',
