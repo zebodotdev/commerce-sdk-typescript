@@ -44,9 +44,9 @@ export interface CountrySpecification {
   paymentMethods?: string[];
   payoutSchedules?: string[];
   btAgingSpecs?: string[];
-  legalEntityTypes?: LegalEntityTypeSpec[];
-  financialAccountTypes?: FinancialAccountTypeSpec[];
-  idDocumentTypes?: IDDocumentTypeSpec[];
+  legalEntityTypes?: string[];
+  financialAccountTypes?: string[];
+  idDocumentTypes?: string[];
   banks?: CountryBankSpec;
 }
 

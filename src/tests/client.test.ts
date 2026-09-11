@@ -2,8 +2,9 @@
  * Tests for InttegroClient
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { InttegroClient } from '../client';
+import { createMockFetch } from './mocks';
 
 describe('InttegroClient', () => {
   describe('constructor', () => {
@@ -82,6 +83,54 @@ describe('InttegroClient', () => {
           return response;
         });
       }).not.toThrow();
+    });
+  });
+
+  describe('response envelopes', () => {
+    it('should expose response-only HTTP facts and response_meta', async () => {
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn(
+        createMockFetch(
+          {
+            order: { id: 'or_123' },
+            response_meta: {
+              request_id: 'req_123',
+              debug: { provider_attempts: 1 },
+            },
+          },
+          200,
+          {
+            'x-request-id': 'req_123',
+            'retry-after': '15',
+          }
+        )
+      ) as unknown as typeof fetch;
+
+      try {
+        const client = new InttegroClient({ apiKey: 'test_key' });
+        const response = await client.postWithResponse<Record<string, unknown>>(
+          '/orders/create',
+          {}
+        );
+
+        expect(response.status).toBe(200);
+        expect(response.requestId).toBe('req_123');
+        expect(response.retryAfter).toBe('15');
+        expect(response.headers.get('x-request-id')).toBe('req_123');
+        expect(response.meta).toEqual({
+          requestId: 'req_123',
+          debug: { providerAttempts: 1 },
+        });
+        expect(response.data).toEqual({
+          order: { id: 'or_123' },
+          responseMeta: {
+            requestId: 'req_123',
+            debug: { providerAttempts: 1 },
+          },
+        });
+      } finally {
+        global.fetch = originalFetch;
+      }
     });
   });
 });

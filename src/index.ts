@@ -26,6 +26,7 @@ export {
   InttegroRateLimitError,
 } from './errors';
 export type { APIErrorDocument } from './errors';
+export type { InttegroResponse, ResponseMeta } from './http-client';
 
 // Types
 export * from './types';

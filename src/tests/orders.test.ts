@@ -64,6 +64,61 @@ describe('Orders', () => {
       expect(postSpy).toHaveBeenCalledWith('/orders/create', expect.any(Object));
     });
 
+    it('should create an order with response metadata', async () => {
+      const headers = new Headers({
+        'x-request-id': 'req_123',
+        'retry-after': '30',
+      });
+      const postSpy = vi.spyOn(httpClient, 'postResourceWithResponse').mockResolvedValue({
+        data: mockCreateOrderResponse.order,
+        status: 200,
+        headers,
+        requestId: 'req_123',
+        retryAfter: '30',
+        meta: { requestId: 'req_123', debug: { providerAttempts: 1 } },
+      });
+
+      const result = await orders.createWithResponse({
+        customerData: {
+          name: 'John Doe',
+          emailAddress: 'john@example.com',
+          phoneNumber: '0559714200',
+        },
+        lineItems: [
+          {
+            type: 'product',
+            product: {
+              type: 'physical',
+              quantity: 1,
+              name: 'Test Product',
+              price: { currency: 'ghs', value: 20000 },
+            },
+          },
+        ],
+        billingDetails: {
+          emailAddress: 'john@example.com',
+          phoneNumber: '0559714200',
+          name: 'John Doe',
+          address: {
+            name: 'John Doe',
+            phoneNumber: '0559714200',
+            line1: '123 Main St',
+            town: 'Accra',
+            region: 'Greater Accra',
+            country: 'GH',
+          },
+        },
+      });
+
+      expect(result.data).toEqual(mockCreateOrderResponse.order);
+      expect(result.status).toBe(200);
+      expect(result.requestId).toBe('req_123');
+      expect(result.retryAfter).toBe('30');
+      expect(result.headers.get('x-request-id')).toBe('req_123');
+      expect(result.meta).toEqual({ requestId: 'req_123', debug: { providerAttempts: 1 } });
+      expect(postSpy).toHaveBeenCalledWith('/orders/create', 'order', expect.any(Object));
+    });
+
     it('should create an order with customer ID', async () => {
       const postSpy = vi.spyOn(httpClient, 'post').mockResolvedValue(mockCreateOrderResponse);
 
