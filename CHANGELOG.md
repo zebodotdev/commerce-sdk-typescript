@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.4] - 2026-09-12
+
+- Restored npm release publishing through the existing automation token while
+  npm trusted publisher setup is blocked on account-level 2FA.
+- Corrected the runtime SDK version used for telemetry and the User-Agent
+  header to match the published package version.
+
 ## [9.0.3] - 2026-09-12
 
 - Added opt-in response envelopes that expose status, headers, request IDs,
@@ -132,6 +139,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🧪 Thoroughly tested
 - 📝 JSDoc documentation throughout
 
+[9.0.4]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v9.0.4
+[9.0.3]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v9.0.3
+[9.0.2]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v9.0.2
+[9.0.1]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v9.0.1
 [9.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v9.0.0
 [8.1.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v8.1.0
 [7.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v7.0.0

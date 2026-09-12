@@ -105,9 +105,17 @@ jobs:
           --title "Inttegro TypeScript SDK ${GITHUB_REF_NAME}"
           --verify-tag
 
-      - name: Publish the exact artifact to npm with OIDC
+      - name: Publish the exact artifact to npm
         shell: bash
-        run: npm publish ./artifacts/*.tgz --access public --ignore-scripts --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "NPM_TOKEN is required until npm trusted publishing is enabled for this package." >&2
+            exit 1
+          fi
+          npm publish ./artifacts/*.tgz --access public --ignore-scripts --provenance
 
       - name: Finalize the immutable GitHub release
         env:
