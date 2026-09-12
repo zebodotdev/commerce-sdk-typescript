@@ -107,15 +107,7 @@ jobs:
 
       - name: Publish the exact artifact to npm
         shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
-            echo "NPM_TOKEN is required until npm trusted publishing is enabled for this package." >&2
-            exit 1
-          fi
-          npm publish ./artifacts/*.tgz --access public --ignore-scripts --provenance
+        run: npm publish ./artifacts/*.tgz --access public --ignore-scripts --provenance
 
       - name: Finalize the immutable GitHub release
         env:
