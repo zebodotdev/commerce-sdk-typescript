@@ -125,15 +125,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🧪 Thoroughly tested
 - 📝 JSDoc documentation throughout
 
-[9.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v9.0.0
-[8.1.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v8.1.0
-[7.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v7.0.0
-[8.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v8.0.0
-[6.1.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v6.1.0
-[6.0.1]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v6.0.1
-[6.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v6.0.0
-[4.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v4.0.0
-[5.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v5.0.0
-[3.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v3.0.0
-[2.0.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v2.0.0
-[0.1.0]: https://github.com/zebodotdev/inttegro-sdk-typescript/releases/tag/v0.1.0
+[9.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v9.0.0
+[8.1.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v8.1.0
+[7.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v7.0.0
+[8.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v8.0.0
+[6.1.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v6.1.0
+[6.0.1]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v6.0.1
+[6.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v6.0.0
+[4.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v4.0.0
+[5.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v5.0.0
+[3.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v3.0.0
+[2.0.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v2.0.0
+[0.1.0]: https://github.com/inttegro/inttegro-sdk-typescript/releases/tag/v0.1.0

@@ -1,6 +1,6 @@
 # Inttegro TypeScript SDK
 
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/zebodotdev/inttegro-sdk-typescript/badge)](https://scorecard.dev/viewer/?uri=github.com/zebodotdev/inttegro-sdk-typescript)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/inttegro/inttegro-sdk-typescript/badge)](https://scorecard.dev/viewer/?uri=github.com/inttegro/inttegro-sdk-typescript)
 
 The official TypeScript client for building server-side Inttegro integrations.
 
@@ -128,7 +128,7 @@ The GitHub release for each version is the canonical record. It contains the exa
 ```bash
 sha256sum --check SHA256SUMS
 gh attestation verify inttegro-inttegro-sdk-8.1.0.tgz \
-  --repo zebodotdev/inttegro-sdk-typescript
+  --repo inttegro/inttegro-sdk-typescript
 ```
 
 ## Develop

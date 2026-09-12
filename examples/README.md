@@ -188,4 +188,4 @@ If you encounter any issues with these examples, please:
 1. Check the main [README](../README.md) for setup instructions
 2. Verify your API key is valid and has appropriate permissions
 3. Review the [API documentation](https://studio.inttegro.com)
-4. Open an issue on [GitHub](https://github.com/zebodotdev/inttegro-sdk-typescript/issues)
+4. Open an issue on [GitHub](https://github.com/inttegro/inttegro-sdk-typescript/issues)

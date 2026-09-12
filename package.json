@@ -46,10 +46,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zebodotdev/inttegro-sdk-typescript.git"
+    "url": "https://github.com/inttegro/inttegro-sdk-typescript.git"
   },
   "bugs": {
-    "url": "https://github.com/zebodotdev/inttegro-sdk-typescript/issues"
+    "url": "https://github.com/inttegro/inttegro-sdk-typescript/issues"
   },
   "homepage": "https://typescript.inttegro.dev/",
   "dependencies": {
