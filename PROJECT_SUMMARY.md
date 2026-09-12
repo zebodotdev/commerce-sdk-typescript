@@ -120,7 +120,7 @@ This TypeScript SDK for the Inttegro API has been successfully built with produc
 ### Installation
 
 ```bash
-git clone https://github.com/zebodotdev/inttegro-sdk-typescript.git
+git clone https://github.com/inttegro/inttegro-sdk-typescript.git
 cd inttegro-sdk-typescript
 npm install
 ```

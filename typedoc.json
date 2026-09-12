@@ -17,6 +17,6 @@
   "githubPages": true,
   "navigationLinks": {
     "Studio": "https://studio.inttegro.com/sdks",
-    "GitHub": "https://github.com/zebodotdev/inttegro-sdk-typescript"
+    "GitHub": "https://github.com/inttegro/inttegro-sdk-typescript"
   }
 }
