@@ -8,7 +8,7 @@ import { Address, CustomerData } from './customer';
 import type { BankAccountConfig } from './bank-accounts';
 import type { DoshAccount, FinancialAccountType } from './financial-accounts';
 import type { WalletType } from './wallets';
-import type { Payment } from './payments';
+import { Payment, type PaymentNextAction } from './payments';
 import type { Refund } from './refunds';
 
 export const LineItemTypes = {
@@ -524,6 +524,34 @@ export interface Order {
   paymentDueAt?: Date;
   refunds?: Refund[];
 }
+
+/** Deterministic questions about an order response. */
+export const Order = {
+  /** Whether the order has recorded payment, including a subsequently completed order. */
+  isPaid(order: Order): boolean {
+    return order.status === OrderStatuses.Paid || order.paidAt != null;
+  },
+
+  /** Whether the order is waiting for payment. */
+  requiresPayment(order: Order): boolean {
+    return order.status === OrderStatuses.RequiresPayment;
+  },
+
+  /** Whether the order has reached a final state. */
+  isTerminal(order: Order): boolean {
+    return (
+      order.status === OrderStatuses.Paid ||
+      order.status === OrderStatuses.Completed ||
+      order.status === OrderStatuses.Canceled ||
+      order.status === OrderStatuses.Expired
+    );
+  },
+
+  /** Nested payment action details, when the order's payment requires action. */
+  requiredPaymentAction(order: Order): PaymentNextAction | undefined {
+    return order.payment ? Payment.requiredAction(order.payment) : undefined;
+  },
+} as const;
 
 /** Send order document request */
 export interface OrderDocumentDeliveryRequest {

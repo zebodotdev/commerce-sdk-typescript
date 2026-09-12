@@ -198,6 +198,24 @@ export interface Product {
   unitDim?: string | null;
 }
 
+/** Deterministic questions about a product response. */
+export const Product = {
+  /** Whether the product is archived. */
+  isArchived(product: Product): boolean {
+    return product.archivedAt != null;
+  },
+
+  /** Whether the product is currently published and available. */
+  isPublished(product: Product): boolean {
+    return product.active && product.archivedAt == null;
+  },
+
+  /** Whether the product has a recorded first publication. */
+  wasEverPublished(product: Product): boolean {
+    return product.publishedAt != null;
+  },
+} as const;
+
 export interface ProductPage {
   number: number;
   size: number;

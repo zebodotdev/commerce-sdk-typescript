@@ -25,6 +25,17 @@ import type { Span } from '@opentelemetry/api';
 import { Telemetry } from './telemetry';
 import { SDK_VERSION } from './version';
 
+export type ResponseMeta = Record<string, unknown>;
+
+export interface InttegroResponse<T> {
+  data: T;
+  status: number;
+  headers: Headers;
+  requestId?: string;
+  retryAfter?: string;
+  meta?: ResponseMeta;
+}
+
 /**
  * HTTP client for making requests to the Inttegro API
  */
@@ -213,6 +224,17 @@ export class HttpClient {
    * Make an API request
    */
   async request<T>(path: string, options: RequestInit = {}, skipRetry = false): Promise<T> {
+    return (await this.requestWithResponse<T>(path, options, skipRetry)).data;
+  }
+
+  /**
+   * Make an API request and return the decoded value with response metadata.
+   */
+  async requestWithResponse<T>(
+    path: string,
+    options: RequestInit = {},
+    skipRetry = false
+  ): Promise<InttegroResponse<T>> {
     const method = (options.method || 'GET').toUpperCase();
     return this.telemetry.request(path, method, this.config.baseUrl, SDK_VERSION, async (span) => {
       const url = `${this.config.baseUrl}${path}`;
@@ -235,7 +257,7 @@ export class HttpClient {
 
       this.logger.debug(`Making ${requestOptions.method || 'GET'} request to ${finalUrl}`);
 
-      const makeRequest = async (resendCount: number): Promise<T> => {
+      const makeRequest = async (resendCount: number): Promise<InttegroResponse<T>> => {
         span?.addEvent('inttegro.http.attempt.started', {
           'http.request.resend_count': resendCount,
         });
@@ -255,10 +277,10 @@ export class HttpClient {
         if (contentType && contentType.includes('application/json')) {
           const value = toPublicValue(await interceptedResponse.json()) as T;
           span?.addEvent('inttegro.response.decoded');
-          return value;
+          return responseEnvelope(value, interceptedResponse);
         }
         span?.addEvent('inttegro.response.decoded');
-        return {} as T;
+        return responseEnvelope({} as T, interceptedResponse);
       };
 
       if (skipRetry) return makeRequest(0);
@@ -383,10 +405,32 @@ export class HttpClient {
   }
 
   /**
+   * Make a GET request and return the decoded value with response metadata.
+   */
+  async getWithResponse<T>(path: string, options: RequestInit = {}): Promise<InttegroResponse<T>> {
+    return this.requestWithResponse<T>(path, { ...options, method: 'GET' });
+  }
+
+  /**
    * Make a POST request
    */
   async post<T>(path: string, body?: unknown, options: RequestInit = {}): Promise<T> {
     return this.request<T>(path, {
+      ...options,
+      method: 'POST',
+      body: body === undefined ? undefined : serializeRequestBody(body),
+    });
+  }
+
+  /**
+   * Make a POST request and return the decoded value with response metadata.
+   */
+  async postWithResponse<T>(
+    path: string,
+    body?: unknown,
+    options: RequestInit = {}
+  ): Promise<InttegroResponse<T>> {
+    return this.requestWithResponse<T>(path, {
       ...options,
       method: 'POST',
       body: body === undefined ? undefined : serializeRequestBody(body),
@@ -407,6 +451,24 @@ export class HttpClient {
       ? await this.post<Record<string, unknown>>(path, body, options)
       : await this.post<Record<string, unknown>>(path, body);
     return resourceFromEnvelope<T>(envelope, field, path);
+  }
+
+  /**
+   * Make a POST request and return one domain value plus response metadata.
+   */
+  async postResourceWithResponse<T>(
+    path: string,
+    field: string,
+    body?: unknown,
+    options: RequestInit = {}
+  ): Promise<InttegroResponse<T>> {
+    const response = Object.keys(options).length
+      ? await this.postWithResponse<Record<string, unknown>>(path, body, options)
+      : await this.postWithResponse<Record<string, unknown>>(path, body);
+    return {
+      ...response,
+      data: resourceFromEnvelope<T>(response.data, field, path),
+    };
   }
 
   /** Extract one domain value from a multipart response envelope. */
@@ -504,6 +566,32 @@ function resourceFromEnvelope<T>(
     throw new TypeError(`Inttegro returned an invalid ${field} value for ${path}`);
   }
   return resource as T;
+}
+
+function responseEnvelope<T>(data: T, response: Response): InttegroResponse<T> {
+  const requestId = response.headers.get('x-request-id') ?? undefined;
+  const retryAfter = response.headers.get('retry-after') ?? undefined;
+  const meta = responseMetaFrom(data);
+  return {
+    data,
+    status: response.status,
+    headers: response.headers,
+    requestId,
+    retryAfter,
+    meta,
+  };
+}
+
+function responseMetaFrom(value: unknown): ResponseMeta | undefined {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+  const meta = value.responseMeta ?? value.response_meta;
+  return isRecord(meta) ? meta : undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function retryErrorType(error: unknown): string {

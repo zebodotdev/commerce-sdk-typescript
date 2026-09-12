@@ -3,7 +3,7 @@
  */
 
 import { InttegroConfig, RequestInterceptor, ResponseInterceptor } from './config';
-import { HttpClient } from './http-client';
+import { HttpClient, InttegroResponse } from './http-client';
 import { Chimes } from './resources/chimes';
 import { Balances } from './resources/balances';
 import { FinancialAccounts } from './resources/financial-accounts';
@@ -191,5 +191,27 @@ export class InttegroClient {
    */
   addResponseInterceptor(interceptor: ResponseInterceptor): void {
     this.httpClient.addResponseInterceptor(interceptor);
+  }
+
+  /**
+   * Make a JSON request and keep native HTTP response facts with the decoded body.
+   *
+   * Prefer typed resource methods such as `orders.createWithResponse` when they
+   * exist. This lower-level helper is useful while response-envelope coverage is
+   * rolled out across every resource.
+   */
+  requestWithResponse<T>(path: string, options: RequestInit = {}): Promise<InttegroResponse<T>> {
+    return this.httpClient.requestWithResponse<T>(path, options);
+  }
+
+  /**
+   * Make a POST request and keep native HTTP response facts with the decoded body.
+   */
+  postWithResponse<T>(
+    path: string,
+    body?: unknown,
+    options: RequestInit = {}
+  ): Promise<InttegroResponse<T>> {
+    return this.httpClient.postWithResponse<T>(path, body, options);
   }
 }

@@ -104,6 +104,24 @@ export interface PaymentMethod {
   verifiedAt?: Date | null;
 }
 
+/** Deterministic questions about a payment-method response. */
+export const PaymentMethod = {
+  /** Whether the payment method is archived. */
+  isArchived(method: PaymentMethod): boolean {
+    return method.archivedAt != null;
+  },
+
+  /** Whether payment-method ownership has been verified. */
+  isVerified(method: PaymentMethod): boolean {
+    return method.verifiedAt != null;
+  },
+
+  /** Whether the payment method may be reused in new payment flows. */
+  isReusable(method: PaymentMethod): boolean {
+    return method.active && method.archivedAt == null && method.ephemeral !== true;
+  },
+} as const;
+
 export interface PaymentMethodSupplied {
   by: string;
   channel?: string | null;

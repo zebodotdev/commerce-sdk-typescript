@@ -38,7 +38,7 @@
  * @see https://studio.inttegro.com/orders for detailed guides
  */
 
-import { HttpClient } from '../http-client';
+import { HttpClient, InttegroResponse } from '../http-client';
 import {
   CreateOrderRequest,
   LookupOrderRequest,
@@ -164,6 +164,15 @@ export class Orders {
 
     const response = await this.httpClient.post<OrderEnvelope>('/orders/create', request);
     return response.order;
+  }
+
+  /**
+   * Create a new order and keep native HTTP response facts with the decoded order.
+   */
+  async createWithResponse(request: CreateOrderRequest): Promise<InttegroResponse<Order>> {
+    validateCreateOrderRequest(request);
+
+    return this.httpClient.postResourceWithResponse<Order>('/orders/create', 'order', request);
   }
 
   /**

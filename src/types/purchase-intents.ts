@@ -245,6 +245,26 @@ export interface PurchaseIntent {
   variantSet?: PurchaseIntentVariantSet;
 }
 
+/** Deterministic questions about a purchase-intent response. */
+export const PurchaseIntent = {
+  /** Whether the purchase intent is currently active. */
+  isActive(intent: PurchaseIntent): boolean {
+    return intent.status === PurchaseIntentStatuses.Active;
+  },
+
+  /** Whether the purchase intent can create at most one order. */
+  isSingleUse(intent: PurchaseIntent): boolean {
+    return intent.usage.singleUse === true;
+  },
+
+  /** ID of the order that consumed a single-use purchase intent. */
+  usedOrderId(intent: PurchaseIntent): string | undefined {
+    if (intent.usage.singleUse !== true) return undefined;
+    const id = intent.usage.order?.id;
+    return id && id.length > 0 ? id : undefined;
+  },
+} as const;
+
 export interface PurchaseIntentPage {
   number: number;
   size: number;

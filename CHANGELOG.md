@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.0.3] - 2026-09-12
+
+- Added opt-in response envelopes that expose status, headers, request IDs,
+  retry hints, and response metadata without changing existing resource return
+  values.
+- Added fluent domain helpers for common resource state and actionability checks.
+
 ## [9.0.2] - 2026-09-10
 
 - Added the complete typed file-link access request and response fields.
